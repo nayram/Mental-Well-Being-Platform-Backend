@@ -1,2 +1,2 @@
-CREATE DATABASE "koa_health";
-CREATE DATABASE "koa_health-test";
+CREATE DATABASE "koa_health_user_activity_manager";
+CREATE DATABASE "koa_health_user_activity_manager-test";
