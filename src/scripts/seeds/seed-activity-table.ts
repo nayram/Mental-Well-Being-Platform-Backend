@@ -1,10 +1,10 @@
-import { dbClient } from 'lib/postgres-utils/resource'
-import { sql } from '@pgkit/client'
+import { dbClient } from "lib/postgres-utils/resource";
+import { sql } from "@pgkit/client";
 
 (async () => {
-    console.log('Seeding activity table...')
-    await dbClient.connect(async (connection) => {
-      return connection.query(sql`INSERT INTO activity (title, description, category, duration, difficulty_level, content) VALUES
+  console.log("Seeding activity table...");
+  await dbClient.connect(async (connection) => {
+    return connection.query(sql`INSERT INTO activity (title, description, category, duration, difficulty_level, content) VALUES
       ('Mindful Breathing', 'A simple activity to bring your focus to your breath and reduce stress.', 'Relaxation', 300, 'BEGINNER', 'Inhale slowly through your nose, hold for a few seconds, then exhale slowly.'),
       ('Yoga for Beginners', 'Start your yoga journey with some basic poses aimed at improving flexibility and relaxation.', 'Physical Health', 1800, 'BEGINNER', 'Follow a series of beginner-friendly yoga poses, focusing on your breath and alignment.'),
       ('Pomodoro Technique', 'Improve productivity by breaking your work into intervals, traditionally 25 minutes in length, separated by short breaks.', 'Productivity', 1500, 'BEGINNER', 'Work for 25 minutes, then take a 5-minute break. Repeat the cycle.'),
@@ -14,8 +14,8 @@ import { sql } from '@pgkit/client'
       ('Rock Climbing Basics', 'Introduction to rock climbing, focusing on technique, safety, and building strength.', 'Physical Health', 3600, 'INTERMEDIATE', 'Learn the basics of rock climbing including proper grip, foot placement, and body movement.'),
       ('Speed Reading', 'Techniques to increase your reading speed and comprehension, making learning more efficient.', 'Productivity', 1200, 'INTERMEDIATE', 'Practice reading with a timer, focusing on increasing word per minute rate while retaining comprehension.'),
       ('Marathon Training Plan', 'A comprehensive training plan for running a marathon, including long runs, speed work, and recovery.', 'Physical Health', 7200, 'EXPERT', 'Follow a structured training plan leading up to a marathon, with progressively longer runs.'),
-      ('Group Debate', 'Organize a group debate on a chosen topic to improve communication skills and critical thinking.', 'Social Connection', 3600, 'INTERMEDIATE', 'Participate in a structured debate, presenting arguments and responding to counterpoints.');`)
-    });
-    await dbClient.end()
-    console.log('Done seeding activity table...')
-  })();
+      ('Group Debate', 'Organize a group debate on a chosen topic to improve communication skills and critical thinking.', 'Social Connection', 3600, 'INTERMEDIATE', 'Participate in a structured debate, presenting arguments and responding to counterpoints.');`);
+  });
+  await dbClient.end();
+  console.log("Done seeding activity table...");
+})();
