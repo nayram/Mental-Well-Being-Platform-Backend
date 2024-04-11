@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec  \"node -r ts-node/register/transpile-only src/api/server.ts\"",
     "lint:fix": "eslint --fix ./src",
     "format": "prettier --write .",
     "migration:create": "node -r ts-node/register/transpile-only src/scripts/migrate create --name",
@@ -46,6 +47,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "globals": "^15.0.0",
     "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
