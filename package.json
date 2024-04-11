@@ -23,7 +23,8 @@
   "dependencies": {
     "@pgkit/client": "^0.1.9",
     "@pgkit/migrator": "^0.1.9",
-    "config": "^3.3.11"
+    "config": "^3.3.11",
+    "express": "^4.19.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.2",
