@@ -1,6 +1,8 @@
 import { sql } from "@pgkit/client";
 import { dbClient } from "../../lib/postgres-utils/resource";
 
+export const TableName = "activity";
+
 export enum Category {
   RELAXATION = "RELAXATION",
   PHYSICAL_HEALTH = "PHYSICAL_HEALTH",
@@ -32,16 +34,21 @@ export type ActivitySchema = Activity & {
 };
 
 export const getAllActivities = async (): Promise<ActivitySchema[]> => {
-  return await dbClient.many(sql<ActivitySchema>`SELECT * FROM activity;`);
+  return await dbClient.many(
+    sql<ActivitySchema>`SELECT * FROM ${sql.identifier([TableName])};`,
+  );
 };
 
-export const createActivities = async (activities: Activity[]) => {
+export const createActivities = async (
+  activities: Activity[],
+): Promise<ActivitySchema[]> => {
   const queryValues = activities
     .map(
       (activity) =>
         `('${activity.title}', '${activity.description}', '${activity.category}', '${activity.duration}', '${activity.difficulty_level}', '${activity.content}')`,
     )
     .join(", ");
-  let query = sql`INSERT INTO activity (title, description, category, duration, difficulty_level, content) VALUES ${sql.raw(queryValues)};`;
-  await dbClient.query(query);
+  let query = sql<ActivitySchema>`INSERT INTO ${sql.identifier([TableName])} (title, description, category, duration, difficulty_level, content) VALUES ${sql.raw(queryValues)};`;
+  const { rows } = await dbClient.query(query);
+  return rows;
 };
