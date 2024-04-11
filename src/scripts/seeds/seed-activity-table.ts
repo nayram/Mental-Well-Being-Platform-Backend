@@ -1,4 +1,4 @@
-import { dbClient } from "lib/postgres-utils/resource";
+import { dbClient } from "../../lib/postgres-utils/resource";
 import { sql } from "@pgkit/client";
 
 (async () => {
