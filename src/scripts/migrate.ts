@@ -1,13 +1,10 @@
 import {Migrator} from '@pgkit/migrator'
-import { pgConnector, PgConnection } from 'lib/postgres-utils/resource'
-import config from 'config'
-
-const client = pgConnector(config.get<PgConnection>('db'))
+import { dbClient } from '../lib/postgres-utils/resource'
 
 const migrator = new Migrator({
   migrationsPath: __dirname + '/migrations',
   migrationTableName: 'migration',
-  client,
+  client: dbClient,
   logger: Migrator.prettyLogger,
 })
 migrator.runAsCLI()

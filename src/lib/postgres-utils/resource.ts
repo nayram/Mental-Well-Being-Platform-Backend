@@ -1,6 +1,7 @@
 import { createClient } from '@pgkit/client'
+import config from 'config'
 
-export type PgConnection = {
+type PgConnection = {
     host: string,
     port: number,
     user: string,
@@ -8,4 +9,6 @@ export type PgConnection = {
     database: string
 }
 
-export const pgConnector = (connection: PgConnection) => createClient(`postgres://${connection.user}:${connection.password}@${connection.host}:${connection.port}/${connection.database}`)
+const dbConfig  = config.get<PgConnection>('db')
+
+export const dbClient = createClient(`postgres://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`)
