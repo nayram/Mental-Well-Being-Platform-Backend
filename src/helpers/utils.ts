@@ -1,10 +1,9 @@
-
-import { sql } from '@pgkit/client'
-import { dbClient } from '../lib/postgres-utils/resource'
-import { Category, DifficultyLevel } from '../ models/activities'
+import { sql } from "@pgkit/client";
+import { dbClient } from "../lib/postgres-utils/resource";
+import { Category, DifficultyLevel } from "../ models/activities";
 
 export const Fixtures = {
-   activities: [
+  activities: [
     {
       title: "Mindful Breathing",
       description:
@@ -35,13 +34,15 @@ export const Fixtures = {
       content:
         "Work for 25 minutes, then take a 5-minute break. Repeat the cycle.",
     },
-  ]
-}
+  ],
+};
 
 export const closeDb = async () => {
   await dbClient.end();
-}
+};
 
-export const truncateTable= async (tableName: string) => {
-  await dbClient.query(sql`TRUNCATE TABLE ${sql.identifier([tableName])} CASCADE;`);
-}
+export const truncateTable = async (tableName: string) => {
+  await dbClient.query(
+    sql`TRUNCATE TABLE ${sql.identifier([tableName])} CASCADE;`,
+  );
+};

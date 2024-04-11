@@ -1,4 +1,4 @@
-import { Router } from 'express';
-import { activityRouter } from './activities/routes';
+import { Router } from "express";
+import { activityRouter } from "./activities/routes";
 
-export const appRoutes = Router().use('/api',activityRouter)
+export const appRoutes = Router().use("/api", activityRouter);

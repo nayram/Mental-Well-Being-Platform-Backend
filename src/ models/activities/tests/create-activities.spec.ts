@@ -48,7 +48,7 @@ describe("Models: Create activities", () => {
     ];
     await createActivities(activities);
     const results = await dbClient.many(
-      sql<ActivitySchema>`SELECT * FROM activity;`
+      sql<ActivitySchema>`SELECT * FROM activity;`,
     );
     expect(results).toHaveLength(activities.length);
     results.forEach((result) => {

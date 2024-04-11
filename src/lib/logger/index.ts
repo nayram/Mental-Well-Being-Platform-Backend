@@ -1,11 +1,14 @@
-import pino, { Logger, LoggerOptions } from "pino"
+import pino, { Logger, LoggerOptions } from "pino";
 
 type LoggerParams = {
-  serviceName: string
-  enabled?: boolean
-}
+  serviceName: string;
+  enabled?: boolean;
+};
 
-export const logger = ({ serviceName, enabled = true }: LoggerParams): Logger => {
+export const logger = ({
+  serviceName,
+  enabled = true,
+}: LoggerParams): Logger => {
   const options: LoggerOptions = {
     timestamp: pino.stdTimeFunctions.isoTime,
     customLevels: {
@@ -14,7 +17,7 @@ export const logger = ({ serviceName, enabled = true }: LoggerParams): Logger =>
       info: 200,
       warn: 400,
       error: 500,
-      fatal: 600
+      fatal: 600,
     },
     redact: [
       "token",
@@ -23,13 +26,13 @@ export const logger = ({ serviceName, enabled = true }: LoggerParams): Logger =>
       "req.body.password",
       "req.body.token",
       "req.headers.authorization",
-      "req.headers.Authorization"
+      "req.headers.Authorization",
     ],
     useOnlyCustomLevels: true,
     name: serviceName,
-    enabled
-  }
+    enabled,
+  };
 
-  const log = pino(options)
-  return log
-}
+  const log = pino(options);
+  return log;
+};
