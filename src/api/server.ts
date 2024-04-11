@@ -2,7 +2,7 @@ import config from 'config'
 import { Response } from 'express'
 import { Server } from 'http'
 import { createApp } from './app'
-import { logger } from 'lib/logger'
+import { logger } from '../lib/logger'
 import { dbClient } from '../lib/postgres-utils/resource'
 
 let server: Server
@@ -41,8 +41,7 @@ process
   }, delay)
 })
 .on("SIGINT", (err) => {
-  if (err) console.error(err)
-  log.info("Server shutting down...")
+  if (err) log.error(err)
   return setTimeout(async () => {
     await shutDownServices()
   }, delay)
