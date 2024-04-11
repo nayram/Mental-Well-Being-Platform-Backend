@@ -1,8 +1,8 @@
 import { sql } from "@pgkit/client";
-import { dbClient } from "../../lib/postgres-utils/resource";
-import { getAllActivities } from "./get-all-activities";
+import { dbClient } from "../../../lib/postgres-utils/resource";
+import { getAllActivities } from "../.";
 
-describe("Get all activities", () => {
+describe("Models: Get all activities", () => {
   beforeAll(async () => {
     await dbClient.query(sql`INSERT INTO activity (title, description, category, duration, difficulty_level, content) VALUES
     ('Mindful Breathing', 'A simple activity to bring your focus to your breath and reduce stress.', 'Relaxation', 300, 'BEGINNER', 'Inhale slowly through your nose, hold for a few seconds, then exhale slowly.'),
