@@ -4,13 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "lint:fix": "eslint --fix ./src",
     "format": "prettier --write .",
     "migration:create": "node -r ts-node/register/transpile-only src/scripts/migrate create --name",
     "migration:up": "node -r ts-node/register/transpile-only src/scripts/migrate up",
     "migration:down": "node -r ts-node/register/transpile-only src/scripts/migrate down",
-    "migration:repair": "node -r ts-node/register/transpile-only src/scripts/migrate repair"
+    "migration:repair": "node -r ts-node/register/transpile-only src/scripts/migrate repair",
+    "seed:activity": "node -r ts-node/register/transpile-only src/scripts/seeds/seed-activity-table.ts",
+    "test": "NODE_ENV=test jest --runInBand --verbose --coverage --detectOpenHandles",
+    "test:watch": "NODE_ENV=test jest --runInBand --verbose --watchAll --detectOpenHandles",
+    "test:migration:up": "NODE_ENV=test npm run migration:up",
+    "test:migration:down": "NODE_ENV=test npm run migration:down",
+    "test:migration:repair": "NODE_ENV=test npm run migration:repair"
   },
   "keywords": [],
   "author": "",
@@ -35,6 +40,7 @@
     "globals": "^15.0.0",
     "jest": "^29.7.0",
     "prettier": "^3.2.5",
+    "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.6.0"
