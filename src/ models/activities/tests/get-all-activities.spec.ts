@@ -1,6 +1,6 @@
 import { sql } from "@pgkit/client";
 import { dbClient } from "../../../lib/postgres-utils/resource";
-import { getAllActivities } from "../.";
+import { getAllActivities } from "..";
 
 describe("Models: Get all activities", () => {
   beforeAll(async () => {
