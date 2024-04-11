@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE "activity" (
     "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
     "title" character varying NOT NULL,
