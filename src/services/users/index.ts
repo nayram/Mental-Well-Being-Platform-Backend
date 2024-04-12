@@ -5,13 +5,12 @@ import { dataValidation } from "../../helpers/utils";
 
 const saltRounds = config.get<number>("salt_rounds");
 
-
 const validateUser = async (user: UserModel.User): Promise<UserModel.User> => {
   const { validateSchema, joi } = dataValidation;
   const schema = joi.object({
-    username: joi.string().min(4).required(),
+    username: joi.string().min(5).required(),
     email: joi.string().email().required(),
-    password: joi.string().min(4).required(),
+    password: joi.string().min(8).required(),
   });
   const data = validateSchema(schema, user);
   return data;

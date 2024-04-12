@@ -3,7 +3,7 @@ import * as bcrypt from "bcrypt";
 import { dbClient } from "../../../lib/postgres-utils/resource";
 import { closeDb, truncateTable } from "../../../helpers/utils";
 import { createUser } from "..";
-import { UserSchema } from "models/users";
+import { User, UserSchema } from "models/users";
 
 describe("Services: Create user", () => {
   afterEach(async () => {
@@ -48,26 +48,38 @@ describe("Services: Create user", () => {
   });
 
   describe("Failure", () => {
-    test("should throw error if password is empty", async () => {
-      const user = {
+
+     test.each([
+      ['username'],
+      ['email'],
+      ['password'],
+    ])('should throw error if %s is empty', async (field) => {
+      const user: Record<string, string> = {
         username: "nayram_test",
-        email: "test@gmail.com",
-        password: "",
+        email: "nayrammensah@gmail.com",
+        password: "hashed_password",
       };
-      await expect(createUser(user)).rejects.toThrow(
-        "password is not allowed to be empty",
+       user[field] = ''
+      await expect(createUser(user as User)).rejects.toThrow(
+        `${field} is not allowed to be empty`,
       );
-    });
-    test("should throw error if email is empty", async () => {
-      const user = {
+    })
+
+    test.each([
+      ['username'],
+      ['email'],
+      ['password'],
+    ])('should throw error if %s is not a string', async (field) => {
+      const user: Record<string, any> = {
         username: "nayram_test",
-        email: "",
-        password: "password",
+        email: "nayrammensah@gmail.com",
+        password: "hashed_password",
       };
-      await expect(createUser(user)).rejects.toThrow(
-        "email is not allowed to be empty",
+       user[field] = 123
+      await expect(createUser(user as User)).rejects.toThrow(
+        `${field} must be a string`,
       );
-    });
+    })
 
     test("should throw error if email is invalid", async () => {
       const user = {
@@ -80,16 +92,51 @@ describe("Services: Create user", () => {
       );
     });
 
-    test("should throw error if username is empty", async () => {
+    test('should throw error if username is less than 5 characters', async () => {
       const user = {
-        username: "",
+        username: "na",
         email: "nayrammensah@gmail.com",
         password: "password",
       };
       await expect(createUser(user)).rejects.toThrow(
-        "username is not allowed to be empty",
+        "username length must be at least 5 characters long",
       );
-    });
+    })
+
+    test('should throw error if password is less than 8 characters', async () => {
+      const user = {
+        username: "nayram_test",
+        email: "nayrammensah@gmail.com",
+        password: "pass",
+      };
+      await expect(createUser(user)).rejects.toThrow(
+        "password length must be at least 8 characters long",
+      );
+    })
+
+    test('should throw error if email already exists', async () => {
+      const user = {
+        username: "nayram_test",
+        email: "nayrammensah@gmail.com",
+        password: "password",
+      };
+      await createUser(user);
+      await expect(createUser(user)).rejects.toThrow(
+        "email already exists",
+      );
+    })
+
+    test('should throw error if username already taken', async () => {
+      const user = {
+        username: "nayram_test",
+        email: "nayrammensah@gmail.com",
+        password: "password",
+      }
+      await createUser(user);
+      await expect(createUser({ ...user, email: 'nayrammensah2@gmail.com' })).rejects.toThrow(
+        "username already exists",
+      )
+    })
   });
 
 });
