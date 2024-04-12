@@ -20,6 +20,6 @@ export const createApp = (): Application => {
     .use(helmet())
     .use(express.urlencoded({ extended: true }))
     .use(express.json())
-    .use(appRoutes);
+    .use('/api',appRoutes);
   return app;
 };
