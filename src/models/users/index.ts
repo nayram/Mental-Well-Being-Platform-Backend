@@ -1,4 +1,5 @@
 import { sql } from "@pgkit/client";
+import { omit } from 'ramda'
 import { logger, dbClient } from '../../lib'
 import { dataValidation } from "../../helpers/utils";
 
@@ -34,13 +35,6 @@ const validateUserModel = (user: User) => {
   return data;
 };
 
-const validateEmail = async (email: string): Promise<string> => {
-  const { validateSchema, joi } = dataValidation;
-  const schema = joi.string().email().required();
-  const data = validateSchema(schema, email);
-  return data;
-};
-
 const validateEmailAndPassword = async (
   email: string,
   password: string,
@@ -51,13 +45,6 @@ const validateEmailAndPassword = async (
     password: joi.string().min(4).required(),
   });
   const data = validateSchema(schema, { email, password });
-  return data;
-};
-
-const validateUsername = async (username: string): Promise<string> => {
-  const { validateSchema, joi } = dataValidation;
-  const schema = joi.string().min(4).required();
-  const data = validateSchema(schema, username);
   return data;
 };
 
@@ -72,39 +59,26 @@ const handleUserModelErrors = (err: any) => {
   throw error;
 }
 
+const omitPasswordField = (user: UserSchema): Omit<UserSchema, 'password'> => omit(['password'], user)
+
 export const createUser = async ({
   username,
   email,
   password,
-}: User): Promise<UserSchema> => {
+}: User): Promise<Omit<UserSchema, 'password'>> => {
   const validUser = await validateUserModel({ username, email, password });
   const query = sql<UserSchema>`INSERT INTO ${sql.identifier([UserTableName])} (username, email, password) VALUES (${validUser.username}, ${validUser.email}, ${validUser.password});`;
   const { rows } = await dbClient.query(query).catch(handleUserModelErrors);
-  return rows[0];
-};
-
-export const getUserByUsername = async (
-  username: string,
-): Promise<UserSchema | null> => {
-  const validUsername = await validateUsername(username);
-  return await dbClient.maybeOne(
-    sql`SELECT * FROM ${sql.identifier([UserTableName])} WHERE username = ${validUsername};`,
-  );
-};
-
-export const getUserByEmail = async (email: string): Promise<UserSchema | null> => {
-  const validEmail = await validateEmail(email);
-  return await dbClient.maybeOne(
-    sql<UserSchema>`SELECT * FROM ${sql.identifier([UserTableName])} WHERE email = ${validEmail};`,
-  );
+  return omitPasswordField(rows[0]);
 };
 
 export const getUserByEmailAndPassword = async (
   email: string,
   password: string,
-): Promise<UserSchema | null> => {
+): Promise<Omit<UserSchema, 'password'> | null> => {
   const values = await validateEmailAndPassword(email, password);
-  return await dbClient.maybeOne(
-    sql`SELECT * FROM ${sql.identifier([UserTableName])} WHERE email = ${values.email} AND password = ${values.password};`,
+  const {rows}  = await dbClient.query(
+    sql<UserSchema>`SELECT * FROM ${sql.identifier([UserTableName])} WHERE email = ${values.email} AND password = ${values.password};`,
   );
+  return rows.length > 0 ?  omitPasswordField(rows[0]) : null
 };
