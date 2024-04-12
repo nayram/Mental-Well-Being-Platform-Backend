@@ -1,6 +1,9 @@
 import { sql } from "@pgkit/client";
+import joi from "joi";
 import { dbClient } from "../lib/postgres-utils/resource";
-import { Category, DifficultyLevel } from "../ models/activities";
+import { ActivityModel } from "../models";
+
+const { Category, DifficultyLevel } = ActivityModel;
 
 export const Fixtures = {
   activities: [
@@ -45,4 +48,18 @@ export const truncateTable = async (tableName: string) => {
   await dbClient.query(
     sql`TRUNCATE TABLE ${sql.identifier([tableName])} CASCADE;`,
   );
+};
+
+export const dataValidation = {
+  joi,
+  validateSchema: async <T>(
+    schema: joi.ObjectSchema | joi.Schema,
+    data: T,
+  ): Promise<T> => {
+    const { error, value } = schema.validate(data);
+    if (error) {
+      throw new Error(error.message.replace(/\"/g, ""));
+    }
+    return value;
+  },
 };
