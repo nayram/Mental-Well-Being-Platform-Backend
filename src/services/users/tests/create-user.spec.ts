@@ -1,7 +1,9 @@
 import { sql } from "@pgkit/client";
+import * as bcrypt from "bcrypt";
 import { dbClient } from "../../../lib/postgres-utils/resource";
 import { closeDb, truncateTable } from "../../../helpers/utils";
 import { createUser } from "..";
+import { UserSchema } from "models/users";
 
 describe("Services: Create user", () => {
   afterEach(async () => {
@@ -27,6 +29,22 @@ describe("Services: Create user", () => {
       expect(createdUser.email).toBe(user.email);
       expect(createdUser.password).not.toBe(user.password);
     });
+
+    test("should hash password", async () => {
+      const user = {
+        username: "nayram_test",
+        email: "nayrammensah@gmail.com",
+        password: "password",
+      };
+      await createUser(user);
+      const createdUser = await dbClient.one(
+        sql<UserSchema>`SELECT * FROM ${sql.identifier(["user"])} WHERE email = ${user.email};`,
+      );
+      expect(createdUser.password).not.toBe(user.password);
+      expect(await bcrypt.compare(user.password, createdUser.password)).toBe(
+        true,
+      );
+    })
   });
 
   describe("Failure", () => {
@@ -73,5 +91,5 @@ describe("Services: Create user", () => {
       );
     });
   });
-  
+
 });
