@@ -1,7 +1,7 @@
 import http, { Server } from "http";
 import { Application } from "express";
 import supertest from "supertest";
-import { createActivities } from "../../../ models/activities";
+import { createActivities } from "../../../models/activities";
 import { createApp } from "../../app";
 import { Fixtures, closeDb, truncateTable } from "../../../helpers/utils";
 
