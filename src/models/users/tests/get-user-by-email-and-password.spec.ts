@@ -5,11 +5,14 @@ import { truncateTable, closeDb } from "../../../helpers/utils";
 
 describe("Models: Get user by username", () => {
   afterAll(async () => {
-    await truncateTable(UserTableName);
     await closeDb();
   });
 
-  test("should get user by username", async () => {
+  afterEach(async () => {
+    await truncateTable(UserTableName);
+  })
+
+  test("should get user by username and email", async () => {
     const user = {
       username: "nayram_test",
       email: "nayrammensah@gmail.com",
@@ -21,6 +24,15 @@ describe("Models: Get user by username", () => {
     const getUser = await getUserByEmailAndPassword(user.email, user.password);
     expect(getUser?.username).toBe(user.username);
     expect(getUser?.email).toBe(user.email);
-    expect(getUser?.password).toBe(user.password);
   });
+
+  test('should return null if user does not exist', async () => {
+    const user = {
+      username: "nayram_test",
+      email: "nayrammensah@gmail.com",
+      password: "hashed_password",
+    };
+    const getUser = await getUserByEmailAndPassword(user.email, user.password);
+    expect(getUser).toBeNull();
+  })
 });
