@@ -14,9 +14,9 @@ const omitPassord = (user: UserModel.UserSchema) => omit(["password"], user);
 const validateUser = async (user: UserModel.User): Promise<UserModel.User> => {
   const { validateSchema, joi } = dataValidation;
   const schema = joi.object({
-    username: joi.string().min(5).required(),
+    username: joi.string().min(4).required(),
     email: joi.string().email().required(),
-    password: joi.string().min(8).required(),
+    password: joi.string().min(4).required(),
   });
   const data = validateSchema(schema, user);
   return data;
@@ -29,7 +29,7 @@ const validateEmailAndPassowrd = async (
   const { validateSchema, joi } = dataValidation;
   const schema = joi.object({
     email: joi.string().email().required(),
-    password: joi.string().min(8).required(),
+    password: joi.string().min(4).required(),
   });
   const data = validateSchema(schema, { email, password });
   return data;
@@ -56,9 +56,10 @@ export const loginUser = async ({
 }: {
   email: string;
   password: string;
-}): Promise<
-  (Omit<UserModel.UserSchema, "password"> & { token: string }) | null
-> => {
+}): Promise<{
+  user: Omit<UserModel.UserSchema, "password">;
+  token: string;
+} | null> => {
   const validData = await validateEmailAndPassowrd(email, password);
   const user = await UserModel.getUserByEmail(validData.email);
   if (!user) {
@@ -75,5 +76,8 @@ export const loginUser = async ({
     expiresIn: jwtExpiry,
   });
 
-  return { ...omitPassord(user || ({} as UserModel.UserSchema)), token };
+  return {
+    user: { ...omitPassord(user || ({} as UserModel.UserSchema)) },
+    token,
+  };
 };

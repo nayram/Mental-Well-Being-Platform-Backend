@@ -20,20 +20,19 @@ describe("Services: Login", () => {
         password: "password",
       };
       await createUser(user);
-      const loggedInUser = await loginUser({
+      const result = await loginUser({
         email: user.email,
         password: user.password,
       });
-      expect(loggedInUser?.email).toBe(user.email);
-      expect(loggedInUser?.username).toBe(user.username);
-      expect(loggedInUser?.token).toBeDefined();
-      expect(loggedInUser).toHaveProperty("token");
-      expect(loggedInUser).toHaveProperty("id");
-      expect(loggedInUser).toHaveProperty("username");
-      expect(loggedInUser).toHaveProperty("email");
-      expect(loggedInUser).toHaveProperty("created_at");
-      expect(loggedInUser).toHaveProperty("updated_at");
-      expect(loggedInUser).not.toHaveProperty("password");
+      expect(result?.user.email).toBe(user.email);
+      expect(result?.user.username).toBe(user.username);
+      expect(result?.token).toBeDefined();
+      expect(result?.user).toHaveProperty("id");
+      expect(result?.user).toHaveProperty("username");
+      expect(result?.user).toHaveProperty("email");
+      expect(result?.user).toHaveProperty("created_at");
+      expect(result?.user).toHaveProperty("updated_at");
+      expect(result?.user).not.toHaveProperty("password");
     });
 
     test("should call jsonwebtoken sign function when logging in", async () => {

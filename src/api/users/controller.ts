@@ -16,3 +16,17 @@ export const createUser = async (
     next(error);
   }
 };
+
+export const loginUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email, password } = req.body;
+    const user = await UserService.loginUser({ email, password });
+    res.status(httpStatus.OK).json(user);
+  } catch (error) {
+    next(error);
+  }
+};
