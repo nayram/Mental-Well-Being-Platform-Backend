@@ -5,13 +5,20 @@ import { isCelebrateError } from "celebrate";
 export const ERROR_TYPES = {
   ERR_MODEL_VALIDATION: "ModelValidationError",
   ERR_VALIDATION: "ValidationError",
+  ERR_INVALID_USER_EMAIL_OR_PASSWORD: "InvalidUserEmailOrPassword",
+};
+
+export const invalidUserEmailOrPasswordError = () => {
+  const error = new Error();
+  error.name = ERROR_TYPES.ERR_INVALID_USER_EMAIL_OR_PASSWORD;
+  error.message = "Invalid email or password";
+  throw error;
 };
 
 export const setErrorStatus =
   (errorMap: Record<string, number>) =>
   (error: any, _: Request, res: Response, next: NextFunction) => {
     if (isCelebrateError(error)) {
-      console.log([...error.details.values()]);
       next(error);
     }
     error.status = errorMap[error.name];
