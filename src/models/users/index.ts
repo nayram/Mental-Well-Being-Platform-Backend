@@ -2,6 +2,7 @@ import { sql } from "@pgkit/client";
 import { omit } from 'ramda'
 import { logger, dbClient } from '../../lib'
 import { dataValidation } from "../../helpers/utils";
+import { ERROR_TYPES } from "../../helpers/errors";
 
 const log = logger({ serviceName: "models" });
 
@@ -50,7 +51,7 @@ const validateEmailAndPassword = async (
 
 const handleUserModelErrors = (err: any) => {
   const error = new Error();
-  error.name = "ModelError";
+  error.name = ERROR_TYPES.ERR_MODEL_VALIDATION;
   if (err.cause.error.constraint in UserModelConstraintErrors) {
     error.message = UserModelConstraintErrors[err.cause.error.constraint as keyof typeof UserModelConstraintErrors];
   } else {

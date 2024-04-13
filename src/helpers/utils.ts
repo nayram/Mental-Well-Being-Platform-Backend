@@ -2,6 +2,7 @@ import { sql } from "@pgkit/client";
 import joi from "joi";
 import { dbClient } from "../lib/postgres-utils/resource";
 import { ActivityModel } from "../models";
+import { ERROR_TYPES } from './errors'
 
 const { Category, DifficultyLevel } = ActivityModel;
 
@@ -58,8 +59,25 @@ export const dataValidation = {
   ): Promise<T> => {
     const { error, value } = schema.validate(data);
     if (error) {
-      throw new Error(error.message.replace(/\"/g, ""));
+      const vaildationError = new Error();
+      vaildationError.message = error.message.replace(/\"/g, "");
+      vaildationError.name = ERROR_TYPES.ERR_VALIDATION;
+      throw vaildationError;
     }
     return value;
   },
 };
+
+export const httpStatus = {
+  CREATED: 201,
+  OK: 200,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+  SERVICE_UNAVAILABLE: 503,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  UN_PROCESSABLE_ENTITY: 422,
+  BAD_REQUEST: 400,
+  AUTHENTICATION_FAILED: 403,
+  AUTHORIZATION_FAILED: 401
+}
