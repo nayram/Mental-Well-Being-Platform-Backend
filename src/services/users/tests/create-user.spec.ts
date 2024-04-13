@@ -89,25 +89,25 @@ describe("Services: Create user", () => {
       );
     });
 
-    test("should throw error if username is less than 5 characters", async () => {
+    test("should throw error if username is less than 4 characters", async () => {
       const user = {
         username: "na",
         email: "nayrammensah@gmail.com",
         password: "password",
       };
       await expect(createUser(user)).rejects.toThrow(
-        "username length must be at least 5 characters long",
+        "username length must be at least 4 characters long",
       );
     });
 
-    test("should throw error if password is less than 8 characters", async () => {
+    test("should throw error if password is less than 4 characters", async () => {
       const user = {
         username: "nayram_test",
         email: "nayrammensah@gmail.com",
-        password: "pass",
+        password: "pas",
       };
       await expect(createUser(user)).rejects.toThrow(
-        "password length must be at least 8 characters long",
+        "password length must be at least 4 characters long",
       );
     });
 

@@ -8,7 +8,7 @@ import { closeDb, truncateTable, httpStatus } from "../../../helpers/utils";
 import { dbClient } from "../../../lib";
 import { UserModel } from "../../../models";
 
-describe("API: POST /api/v1/users", () => {
+describe("API: POST /api/v1/auth/signup", () => {
   let app: Application;
   let server: Server;
 
@@ -33,8 +33,8 @@ describe("API: POST /api/v1/users", () => {
         email: "nayram@me.com",
         password: "nayram123",
       };
-      const res = await supertest(app).post("/api/v1/users").send(user);
-      expect(res.statusCode).toBe(201);
+      const res = await supertest(app).post("/api/v1/auth/signup").send(user);
+      expect(res.statusCode).toBe(httpStatus.CREATED);
       const {
         rows: [getNewUser],
       } = await dbClient.query(
@@ -60,8 +60,8 @@ describe("API: POST /api/v1/users", () => {
           password: "nayram123",
         };
         delete user[key];
-        const res = await supertest(app).post("/api/v1/users").send(user);
-        expect(res.statusCode).toBe(400);
+        const res = await supertest(app).post("/api/v1/auth/signup").send(user);
+        expect(res.statusCode).toBe(httpStatus.BAD_REQUEST);
         expect(res.body.message).toBe("Validation failed");
         expect(res.body.validation).toStrictEqual({
           body: {
@@ -82,8 +82,8 @@ describe("API: POST /api/v1/users", () => {
           password: "nayram123",
         };
         user[key] = 1232;
-        const res = await supertest(app).post("/api/v1/users").send(user);
-        expect(res.statusCode).toBe(400);
+        const res = await supertest(app).post("/api/v1/auth/signup").send(user);
+        expect(res.statusCode).toBe(httpStatus.BAD_REQUEST);
         expect(res.body.message).toBe("Validation failed");
         expect(res.body.validation).toStrictEqual({
           body: {
@@ -101,8 +101,8 @@ describe("API: POST /api/v1/users", () => {
         email: "nayram",
         password: "nayram123",
       };
-      const res = await supertest(app).post("/api/v1/users").send(user);
-      expect(res.statusCode).toBe(400);
+      const res = await supertest(app).post("/api/v1/auth/signup").send(user);
+      expect(res.statusCode).toBe(httpStatus.BAD_REQUEST);
       expect(res.body.message).toBe("Validation failed");
       expect(res.body.validation).toStrictEqual({
         body: {
@@ -121,7 +121,7 @@ describe("API: POST /api/v1/users", () => {
       };
       await UserModel.createUser(user);
       const res = await supertest(app)
-        .post("/api/v1/users")
+        .post("/api/v1/auth/signup")
         .send({ ...user, email: "nayram2@me.com" });
       expect(res.statusCode).toBe(httpStatus.UN_PROCESSABLE_ENTITY);
     });
@@ -134,7 +134,7 @@ describe("API: POST /api/v1/users", () => {
       };
       await UserModel.createUser(user);
       const res = await supertest(app)
-        .post("/api/v1/users")
+        .post("/api/v1/auth/signup")
         .send({ ...user, username: "nayram2" });
       expect(res.statusCode).toBe(httpStatus.UN_PROCESSABLE_ENTITY);
     });
