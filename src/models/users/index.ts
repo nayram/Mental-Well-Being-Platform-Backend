@@ -1,6 +1,6 @@
 import { sql } from "@pgkit/client";
-import { omit } from 'ramda'
-import { logger, dbClient } from '../../lib'
+import { omit } from "ramda";
+import { logger, dbClient } from "../../lib";
 import { dataValidation } from "../../helpers/utils";
 import { ERROR_TYPES } from "../../helpers/errors";
 
@@ -9,9 +9,9 @@ const log = logger({ serviceName: "models" });
 export const UserTableName = "user";
 
 const UserModelConstraintErrors = {
-  "UQ_e12875dfb3b1d92d7d7c5377e22": "email already exists",
-  "UQ_9949557d0e1b2c19e5344c171e9": "username already exists",
-}
+  UQ_e12875dfb3b1d92d7d7c5377e22: "email already exists",
+  UQ_9949557d0e1b2c19e5344c171e9: "username already exists",
+};
 
 export type User = {
   username: string;
@@ -53,20 +53,24 @@ const handleUserModelErrors = (err: any) => {
   const error = new Error();
   error.name = ERROR_TYPES.ERR_MODEL_VALIDATION;
   if (err.cause.error.constraint in UserModelConstraintErrors) {
-    error.message = UserModelConstraintErrors[err.cause.error.constraint as keyof typeof UserModelConstraintErrors];
+    error.message =
+      UserModelConstraintErrors[
+        err.cause.error.constraint as keyof typeof UserModelConstraintErrors
+      ];
   } else {
     log.error(err);
   }
   throw error;
-}
+};
 
-const omitPasswordField = (user: UserSchema): Omit<UserSchema, 'password'> => omit(['password'], user)
+const omitPasswordField = (user: UserSchema): Omit<UserSchema, "password"> =>
+  omit(["password"], user);
 
 export const createUser = async ({
   username,
   email,
   password,
-}: User): Promise<Omit<UserSchema, 'password'>> => {
+}: User): Promise<Omit<UserSchema, "password">> => {
   const validUser = await validateUserModel({ username, email, password });
   const query = sql<UserSchema>`INSERT INTO ${sql.identifier([UserTableName])} (username, email, password) VALUES (${validUser.username}, ${validUser.email}, ${validUser.password});`;
   const { rows } = await dbClient.query(query).catch(handleUserModelErrors);
@@ -76,10 +80,10 @@ export const createUser = async ({
 export const getUserByEmailAndPassword = async (
   email: string,
   password: string,
-): Promise<Omit<UserSchema, 'password'> | null> => {
+): Promise<Omit<UserSchema, "password"> | null> => {
   const values = await validateEmailAndPassword(email, password);
-  const {rows}  = await dbClient.query(
+  const { rows } = await dbClient.query(
     sql<UserSchema>`SELECT * FROM ${sql.identifier([UserTableName])} WHERE email = ${values.email} AND password = ${values.password};`,
   );
-  return rows.length > 0 ?  omitPasswordField(rows[0]) : null
+  return rows.length > 0 ? omitPasswordField(rows[0]) : null;
 };

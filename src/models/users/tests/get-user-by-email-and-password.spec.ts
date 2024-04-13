@@ -10,7 +10,7 @@ describe("Models: Get user by username", () => {
 
   afterEach(async () => {
     await truncateTable(UserTableName);
-  })
+  });
 
   test("should get user by username and email", async () => {
     const user = {
@@ -26,7 +26,7 @@ describe("Models: Get user by username", () => {
     expect(getUser?.email).toBe(user.email);
   });
 
-  test('should return null if user does not exist', async () => {
+  test("should return null if user does not exist", async () => {
     const user = {
       username: "nayram_test",
       email: "nayrammensah@gmail.com",
@@ -34,5 +34,5 @@ describe("Models: Get user by username", () => {
     };
     const getUser = await getUserByEmailAndPassword(user.email, user.password);
     expect(getUser).toBeNull();
-  })
+  });
 });

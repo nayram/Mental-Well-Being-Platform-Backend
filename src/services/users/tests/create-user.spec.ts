@@ -44,42 +44,39 @@ describe("Services: Create user", () => {
       expect(await bcrypt.compare(user.password, createdUser.password)).toBe(
         true,
       );
-    })
+    });
   });
 
   describe("Failure", () => {
+    test.each([["username"], ["email"], ["password"]])(
+      "should throw error if %s is empty",
+      async (field) => {
+        const user: Record<string, string> = {
+          username: "nayram_test",
+          email: "nayrammensah@gmail.com",
+          password: "hashed_password",
+        };
+        user[field] = "";
+        await expect(createUser(user as User)).rejects.toThrow(
+          `${field} is not allowed to be empty`,
+        );
+      },
+    );
 
-     test.each([
-      ['username'],
-      ['email'],
-      ['password'],
-    ])('should throw error if %s is empty', async (field) => {
-      const user: Record<string, string> = {
-        username: "nayram_test",
-        email: "nayrammensah@gmail.com",
-        password: "hashed_password",
-      };
-       user[field] = ''
-      await expect(createUser(user as User)).rejects.toThrow(
-        `${field} is not allowed to be empty`,
-      );
-    })
-
-    test.each([
-      ['username'],
-      ['email'],
-      ['password'],
-    ])('should throw error if %s is not a string', async (field) => {
-      const user: Record<string, any> = {
-        username: "nayram_test",
-        email: "nayrammensah@gmail.com",
-        password: "hashed_password",
-      };
-       user[field] = 123
-      await expect(createUser(user as User)).rejects.toThrow(
-        `${field} must be a string`,
-      );
-    })
+    test.each([["username"], ["email"], ["password"]])(
+      "should throw error if %s is not a string",
+      async (field) => {
+        const user: Record<string, any> = {
+          username: "nayram_test",
+          email: "nayrammensah@gmail.com",
+          password: "hashed_password",
+        };
+        user[field] = 123;
+        await expect(createUser(user as User)).rejects.toThrow(
+          `${field} must be a string`,
+        );
+      },
+    );
 
     test("should throw error if email is invalid", async () => {
       const user = {
@@ -92,7 +89,7 @@ describe("Services: Create user", () => {
       );
     });
 
-    test('should throw error if username is less than 5 characters', async () => {
+    test("should throw error if username is less than 5 characters", async () => {
       const user = {
         username: "na",
         email: "nayrammensah@gmail.com",
@@ -101,9 +98,9 @@ describe("Services: Create user", () => {
       await expect(createUser(user)).rejects.toThrow(
         "username length must be at least 5 characters long",
       );
-    })
+    });
 
-    test('should throw error if password is less than 8 characters', async () => {
+    test("should throw error if password is less than 8 characters", async () => {
       const user = {
         username: "nayram_test",
         email: "nayrammensah@gmail.com",
@@ -112,31 +109,28 @@ describe("Services: Create user", () => {
       await expect(createUser(user)).rejects.toThrow(
         "password length must be at least 8 characters long",
       );
-    })
+    });
 
-    test('should throw error if email already exists', async () => {
+    test("should throw error if email already exists", async () => {
       const user = {
         username: "nayram_test",
         email: "nayrammensah@gmail.com",
         password: "password",
       };
       await createUser(user);
-      await expect(createUser(user)).rejects.toThrow(
-        "email already exists",
-      );
-    })
+      await expect(createUser(user)).rejects.toThrow("email already exists");
+    });
 
-    test('should throw error if username already taken', async () => {
+    test("should throw error if username already taken", async () => {
       const user = {
         username: "nayram_test",
         email: "nayrammensah@gmail.com",
         password: "password",
-      }
+      };
       await createUser(user);
-      await expect(createUser({ ...user, email: 'nayrammensah2@gmail.com' })).rejects.toThrow(
-        "username already exists",
-      )
-    })
+      await expect(
+        createUser({ ...user, email: "nayrammensah2@gmail.com" }),
+      ).rejects.toThrow("username already exists");
+    });
   });
-
 });

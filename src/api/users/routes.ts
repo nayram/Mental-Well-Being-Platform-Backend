@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { createUser } from "./controller";
-import { validateCreateUserRequest } from './validator-schema'
-import { httpStatus, ERROR_TYPES, setErrorStatus } from '../../helpers'
+import { validateCreateUserRequest } from "./validator-schema";
+import { httpStatus, ERROR_TYPES, setErrorStatus } from "../../helpers";
 const router = Router();
 
 const ERR_MAP = {
@@ -9,6 +9,8 @@ const ERR_MAP = {
   [ERROR_TYPES.ERR_VALIDATION]: httpStatus.BAD_REQUEST,
 };
 
-const v1UserRouter = router.post("/", validateCreateUserRequest, createUser).use(setErrorStatus(ERR_MAP));
+const v1UserRouter = router
+  .post("/", validateCreateUserRequest, createUser)
+  .use(setErrorStatus(ERR_MAP));
 
 export const userRouter = router.use("/v1/users", v1UserRouter);

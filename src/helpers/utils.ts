@@ -2,7 +2,7 @@ import { sql } from "@pgkit/client";
 import joi from "joi";
 import { dbClient } from "../lib/postgres-utils/resource";
 import { ActivityModel } from "../models";
-import { ERROR_TYPES } from './errors'
+import { ERROR_TYPES } from "./errors";
 
 const { Category, DifficultyLevel } = ActivityModel;
 
@@ -79,5 +79,5 @@ export const httpStatus = {
   UN_PROCESSABLE_ENTITY: 422,
   BAD_REQUEST: 400,
   AUTHENTICATION_FAILED: 403,
-  AUTHORIZATION_FAILED: 401
-}
+  AUTHORIZATION_FAILED: 401,
+};
