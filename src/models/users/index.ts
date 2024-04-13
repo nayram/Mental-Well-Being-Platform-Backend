@@ -1,5 +1,4 @@
 import { sql } from "@pgkit/client";
-import { omit } from "ramda";
 import { logger, dbClient } from "../../lib";
 import { dataValidation } from "../../helpers/utils";
 import { ERROR_TYPES } from "../../helpers/errors";
@@ -36,16 +35,10 @@ const validateUserModel = (user: User) => {
   return data;
 };
 
-const validateEmailAndPassword = async (
-  email: string,
-  password: string,
-): Promise<{ email: string; password: string }> => {
+const validateEmail = async (email: string): Promise<string> => {
   const { validateSchema, joi } = dataValidation;
-  const schema = joi.object({
-    email: joi.string().email().required(),
-    password: joi.string().min(4).required(),
-  });
-  const data = validateSchema(schema, { email, password });
+  const schema = joi.string().email().required();
+  const data = validateSchema(schema, email);
   return data;
 };
 
@@ -63,27 +56,23 @@ const handleUserModelErrors = (err: any) => {
   throw error;
 };
 
-const omitPasswordField = (user: UserSchema): Omit<UserSchema, "password"> =>
-  omit(["password"], user);
-
 export const createUser = async ({
   username,
   email,
   password,
-}: User): Promise<Omit<UserSchema, "password">> => {
+}: User): Promise<UserSchema> => {
   const validUser = await validateUserModel({ username, email, password });
   const query = sql<UserSchema>`INSERT INTO ${sql.identifier([UserTableName])} (username, email, password) VALUES (${validUser.username}, ${validUser.email}, ${validUser.password});`;
   const { rows } = await dbClient.query(query).catch(handleUserModelErrors);
-  return omitPasswordField(rows[0]);
+  return rows[0];
 };
 
-export const getUserByEmailAndPassword = async (
+export const getUserByEmail = async (
   email: string,
-  password: string,
-): Promise<Omit<UserSchema, "password"> | null> => {
-  const values = await validateEmailAndPassword(email, password);
+): Promise<UserSchema | null> => {
+  const validEmail = await validateEmail(email);
   const { rows } = await dbClient.query(
-    sql<UserSchema>`SELECT * FROM ${sql.identifier([UserTableName])} WHERE email = ${values.email} AND password = ${values.password};`,
+    sql<UserSchema>`SELECT * FROM ${sql.identifier([UserTableName])} WHERE email = ${validEmail};`,
   );
-  return rows.length > 0 ? omitPasswordField(rows[0]) : null;
+  return rows.length > 0 ? rows[0] : null;
 };
