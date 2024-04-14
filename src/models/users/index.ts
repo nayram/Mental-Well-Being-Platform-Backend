@@ -24,28 +24,29 @@ export type UserSchema = User & {
   updated_at: Date;
 };
 
-const validateUserModel = (user: User) => {
+const validateUserModel = async (user: User) => {
   const { validateSchema, joi } = dataValidation;
   const schema = joi.object({
     username: joi.string().min(4).required(),
     email: joi.string().email().required(),
     password: joi.string().min(4).required(),
   });
-  const data = validateSchema(schema, user);
+  const data = await validateSchema(schema, user);
   return data;
 };
 
 const validateEmail = async (email: string): Promise<string> => {
   const { validateSchema, joi } = dataValidation;
-  const schema = joi.string().email().required();
-  const data = validateSchema(schema, email);
-  return data;
+  
+  const schema = joi.object({ email: joi.string().email().required() });
+  const data = await validateSchema(schema, { email });
+  return data.email;
 };
 
 const handleUserModelErrors = (err: any) => {
   const error = new Error();
-  error.name = ERROR_TYPES.ERR_MODEL_VALIDATION;
   if (err.cause.error.constraint in UserModelConstraintErrors) {
+    error.name = ERROR_TYPES.ERR_MODEL_VALIDATION;
     error.message =
       UserModelConstraintErrors[
         err.cause.error.constraint as keyof typeof UserModelConstraintErrors

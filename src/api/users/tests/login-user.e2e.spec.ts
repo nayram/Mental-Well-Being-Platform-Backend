@@ -10,6 +10,7 @@ describe("API: POST /api/v1/auth/login", () => {
   let app: Application;
   let server: Server;
 
+
   beforeAll(async () => {
     app = createApp();
     server = http.createServer(app);
@@ -28,12 +29,10 @@ describe("API: POST /api/v1/auth/login", () => {
     test("should login user successfully", async () => {
       const user = {
         username: "nayram",
-        email: "nayram@me.com",
+        email: "nayram.login@me.com",
         password: "nayram123213",
       };
-
       await UserService.createUser(user);
-
       const { body, status } = await supertest(app)
         .post("/api/v1/auth/login")
         .send({ email: user.email, password: user.password });
@@ -55,7 +54,7 @@ describe("API: POST /api/v1/auth/login", () => {
       "should fail to login when %s is empty",
       async (field) => {
         const user: Record<string, string> = {
-          email: "nayram@me.com",
+          email: `nayram+login.${field}@me.com`,
           password: "nayram123213",
         };
         user[field] = "";
@@ -78,7 +77,7 @@ describe("API: POST /api/v1/auth/login", () => {
       "should fail to login user when %s is not a string",
       async (key) => {
         const user: Record<string, any> = {
-          email: "nayram@me.com",
+          email: `nayram+login.${key}@me.com`,
           password: "nayram123",
         };
         user[key] = 1232;
@@ -114,7 +113,7 @@ describe("API: POST /api/v1/auth/login", () => {
 
     test("should fail to login user when password is invalid", async () => {
       const user = {
-        email: "nayram@me.com",
+        email: "nayram+login+pasword.is.invalid@me.com",
         password: "nay",
       };
       const res = await supertest(app).post("/api/v1/auth/login").send(user);
@@ -131,7 +130,7 @@ describe("API: POST /api/v1/auth/login", () => {
 
     test("should fail to login user when email does not exist", async () => {
       const user = {
-        email: "nayram@me.com",
+        email: "nayram+login+user.does.not.exist@me.com",
         password: "nayram123213",
       };
       const res = await supertest(app).post("/api/v1/auth/login").send(user);
@@ -144,7 +143,7 @@ describe("API: POST /api/v1/auth/login", () => {
         email: "nayram@me.com",
         password: "nayram123213",
       };
-      UserService.createUser({
+      await UserService.createUser({
         email: user.email,
         password: user.password,
         username: "nayram",

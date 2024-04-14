@@ -18,7 +18,7 @@ const validateUser = async (user: UserModel.User): Promise<UserModel.User> => {
     email: joi.string().email().required(),
     password: joi.string().min(4).required(),
   });
-  const data = validateSchema(schema, user);
+  const data = await validateSchema(schema, user);
   return data;
 };
 
@@ -31,7 +31,7 @@ const validateEmailAndPassowrd = async (
     email: joi.string().email().required(),
     password: joi.string().min(4).required(),
   });
-  const data = validateSchema(schema, { email, password });
+  const data = await validateSchema(schema, { email, password });
   return data;
 };
 

@@ -5,6 +5,9 @@ import { closeDb, truncateTable } from "../../../helpers/utils";
 import { createUser, UserTableName, User } from "..";
 
 describe("Models: Create user", () => {
+  beforeAll(async () => {
+    await truncateTable(UserTableName);
+  })
   afterAll(async () => {
     await closeDb();
   });
@@ -22,7 +25,7 @@ describe("Models: Create user", () => {
       };
       await createUser(user);
       const createdUser = await dbClient.one(
-        sql`SELECT * FROM ${sql.identifier(["user"])} WHERE username = ${user.username} AND email = ${user.email} AND password = ${user.password};`,
+        sql`SELECT * FROM ${sql.identifier([UserTableName])} WHERE username = ${user.username} AND email = ${user.email} AND password = ${user.password};`,
       );
       expect(createdUser.username).toBe(user.username);
       expect(createdUser.email).toBe(user.email);

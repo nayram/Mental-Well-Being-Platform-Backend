@@ -1,9 +1,9 @@
 import http, { Server } from "http";
 import { Application } from "express";
 import supertest from "supertest";
-import { createActivities } from "../../../models/activities";
+import { ActivityModel } from "../../../models";
 import { createApp } from "../../app";
-import { Fixtures, closeDb, truncateTable } from "../../../helpers/utils";
+import { Fixtures, truncateTable, closeDb } from "../../../helpers/utils";
 
 describe("API: GET /api/v1/activities", () => {
   let app: Application;
@@ -12,11 +12,11 @@ describe("API: GET /api/v1/activities", () => {
   beforeAll(async () => {
     app = createApp();
     server = http.createServer(app);
-    await createActivities(Fixtures.activities);
+    await ActivityModel.createActivities(Fixtures.activities);
   });
 
   afterAll(async () => {
-    await truncateTable("activity");
+    await truncateTable(ActivityModel.TableName);
     await closeDb();
     server.close();
   });

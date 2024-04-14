@@ -1,9 +1,7 @@
-import { sql } from "@pgkit/client";
 import * as bcrypt from "bcrypt";
-import { dbClient } from "../../../lib/postgres-utils/resource";
 import { closeDb, truncateTable } from "../../../helpers/utils";
 import { createUser } from "..";
-import { User, UserSchema } from "models/users";
+import { UserModel } from "../../../models";
 
 describe("Services: Create user", () => {
   afterEach(async () => {
@@ -18,16 +16,14 @@ describe("Services: Create user", () => {
     test("should create user", async () => {
       const user = {
         username: "nayram_test",
-        email: "nayrammensah@gmail.com",
-        password: "hashed_password",
+        email: "nayram.user@gmail.com",
+        password: "password",
       };
       await createUser(user);
-      const createdUser = await dbClient.one(
-        sql`SELECT * FROM ${sql.identifier(["user"])} WHERE email = ${user.email};`,
-      );
-      expect(createdUser.username).toBe(user.username);
-      expect(createdUser.email).toBe(user.email);
-      expect(createdUser.password).not.toBe(user.password);
+      const createdUser = await UserModel.getUserByEmail(user.email);
+      expect(createdUser?.username).toBe(user.username);
+      expect(createdUser?.email).toBe(user.email);
+      expect(createdUser?.password).not.toBe(user.password);
     });
 
     test("should hash password", async () => {
@@ -37,11 +33,9 @@ describe("Services: Create user", () => {
         password: "password",
       };
       await createUser(user);
-      const createdUser = await dbClient.one(
-        sql<UserSchema>`SELECT * FROM ${sql.identifier(["user"])} WHERE email = ${user.email};`,
-      );
-      expect(createdUser.password).not.toBe(user.password);
-      expect(await bcrypt.compare(user.password, createdUser.password)).toBe(
+      const createdUser = await UserModel.getUserByEmail(user.email);
+      expect(createdUser?.password).not.toBe(user.password);
+      expect(bcrypt.compareSync(user.password, createdUser?.password || "")).toBe(
         true,
       );
     });
@@ -57,7 +51,7 @@ describe("Services: Create user", () => {
           password: "hashed_password",
         };
         user[field] = "";
-        await expect(createUser(user as User)).rejects.toThrow(
+        await expect(createUser(user as UserModel.User)).rejects.toThrow(
           `${field} is not allowed to be empty`,
         );
       },
@@ -72,7 +66,7 @@ describe("Services: Create user", () => {
           password: "hashed_password",
         };
         user[field] = 123;
-        await expect(createUser(user as User)).rejects.toThrow(
+        await expect(createUser(user as UserModel.User)).rejects.toThrow(
           `${field} must be a string`,
         );
       },
