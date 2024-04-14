@@ -1,11 +1,11 @@
 import { dbClient, sql } from "../../../lib";
-import { UserModel, ActivityModel } from "../../.";
+import { UserModel, ActivityModel } from "../..";
 import {
   createUserActivity,
   UserActivityTableName,
   ActivityStatus,
   UserActivitySchema,
-} from "../.";
+} from "..";
 import { closeDb, truncateTable, Fixtures } from "../../../helpers";
 
 describe("Models: Create User Activity", () => {

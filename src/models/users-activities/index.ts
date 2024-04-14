@@ -93,9 +93,10 @@ export const createUserActivity = async ({
     status,
   });
   const query = sql<UserActivitySchema>`INSERT INTO ${sql.identifier([UserActivityTableName])} (user_id, activity_id, status) VALUES (${validData.user_id}, ${validData.activity_id}, ${validData.status});`;
-  const { rows } = await dbClient
-    .query(query)
-    .catch(handleUserActivityModelErrors);
+  await dbClient.query(query).catch(handleUserActivityModelErrors);
+  const { rows } = await dbClient.query(
+    sql<UserActivitySchema>`SELECT * FROM ${sql.identifier([UserActivityTableName])} WHERE user_id = ${validData.user_id} AND activity_id = ${validData.activity_id};`,
+  );
   return rows[0];
 };
 
@@ -108,11 +109,10 @@ export const updateUserActivityStatusById = async ({
 }) => {
   const validData = await validateIdAndStatus(id, status);
   const query = sql<UserActivitySchema>`UPDATE ${sql.identifier([UserActivityTableName])} SET status = ${validData.status} WHERE id = ${validData.id};`;
-  await dbClient.anyFirst(query)
+  await dbClient.anyFirst(query);
   const { rows } = await dbClient.query(
     sql<UserActivitySchema>`SELECT * FROM ${sql.identifier([UserActivityTableName])} WHERE id = ${validData.id};`,
   );
-  console.log(rows[0]);
   return rows[0];
 };
 

@@ -36,7 +36,7 @@ describe("Models: Update User Activities", () => {
   describe("Success", () => {
     test("should update user activity status", async () => {
       const [pendingActivity] = await ActivityModel.getAllActivities();
-      
+
       const userActivity = {
         user_id: createdUser?.id || "",
         activity_id: pendingActivity.id,
