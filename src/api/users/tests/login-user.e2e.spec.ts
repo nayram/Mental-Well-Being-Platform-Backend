@@ -10,7 +10,6 @@ describe("API: POST /api/v1/auth/login", () => {
   let app: Application;
   let server: Server;
 
-
   beforeAll(async () => {
     app = createApp();
     server = http.createServer(app);

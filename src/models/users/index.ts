@@ -37,7 +37,7 @@ const validateUserModel = async (user: User) => {
 
 const validateEmail = async (email: string): Promise<string> => {
   const { validateSchema, joi } = dataValidation;
-  
+
   const schema = joi.object({ email: joi.string().email().required() });
   const data = await validateSchema(schema, { email });
   return data.email;

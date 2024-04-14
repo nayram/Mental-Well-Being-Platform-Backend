@@ -7,7 +7,7 @@ import { createUser, UserTableName, User } from "..";
 describe("Models: Create user", () => {
   beforeAll(async () => {
     await truncateTable(UserTableName);
-  })
+  });
   afterAll(async () => {
     await closeDb();
   });

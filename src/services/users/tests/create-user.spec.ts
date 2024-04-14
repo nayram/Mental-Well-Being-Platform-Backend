@@ -35,9 +35,9 @@ describe("Services: Create user", () => {
       await createUser(user);
       const createdUser = await UserModel.getUserByEmail(user.email);
       expect(createdUser?.password).not.toBe(user.password);
-      expect(bcrypt.compareSync(user.password, createdUser?.password || "")).toBe(
-        true,
-      );
+      expect(
+        bcrypt.compareSync(user.password, createdUser?.password || ""),
+      ).toBe(true);
     });
   });
 
