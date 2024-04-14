@@ -1,4 +1,5 @@
 import { createClient } from "@pgkit/client";
+export { sql } from "@pgkit/client";
 import config from "config";
 
 type PgConnection = {

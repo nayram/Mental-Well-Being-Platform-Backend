@@ -1,5 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE TABLE "user-activty" (
+CREATE TABLE "userActivty" (
     "id" uuid NOT NULL DEFAULT uuid_generate_v4(), 
     "user_id" uuid NOT NULL,
     "activity_id" uuid NOT NULL,
