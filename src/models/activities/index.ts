@@ -18,6 +18,11 @@ export enum DifficultyLevel {
   EXPERT = "EXPERT",
 }
 
+export enum Status {
+  ACTIVE = "ACTIVE",
+  DELETED = "DELETED",
+}
+
 export type Activity = {
   title: string;
   description: string;
@@ -25,6 +30,7 @@ export type Activity = {
   duration: number;
   difficulty_level: DifficultyLevel;
   content: string;
+  status: Status;
 };
 
 export type ActivitySchema = Activity & {
@@ -35,7 +41,7 @@ export type ActivitySchema = Activity & {
 
 export const getAllActivities = async (): Promise<ActivitySchema[]> => {
   return await dbClient.many(
-    sql<ActivitySchema>`SELECT * FROM ${sql.identifier([TableName])};`,
+    sql<ActivitySchema>`SELECT * FROM ${sql.identifier([TableName])} where status = 'ACTIVE';`,
   );
 };
 
@@ -45,10 +51,10 @@ export const createActivities = async (
   const queryValues = activities
     .map(
       (activity) =>
-        `('${activity.title}', '${activity.description}', '${activity.category}', '${activity.duration}', '${activity.difficulty_level}', '${activity.content}')`,
+        `('${activity.title}', '${activity.description}', '${activity.category}', '${activity.duration}', '${activity.difficulty_level}', '${activity.content}', '${activity.status}')`,
     )
     .join(", ");
-  let query = sql<ActivitySchema>`INSERT INTO ${sql.identifier([TableName])} (title, description, category, duration, difficulty_level, content) VALUES ${sql.raw(queryValues)};`;
+  let query = sql<ActivitySchema>`INSERT INTO ${sql.identifier([TableName])} (title, description, category, duration, difficulty_level, content, status) VALUES ${sql.raw(queryValues)};`;
   const { rows } = await dbClient.query(query);
   return rows;
 };

@@ -4,7 +4,7 @@ import { dbClient } from "../lib/postgres-utils/resource";
 import { ActivityModel } from "../models";
 import { ERROR_TYPES } from "./errors";
 
-const { Category, DifficultyLevel } = ActivityModel;
+const { Category, DifficultyLevel, Status } = ActivityModel;
 
 export const Fixtures = {
   activities: [
@@ -17,6 +17,7 @@ export const Fixtures = {
       difficulty_level: DifficultyLevel.BEGINNER,
       content:
         "Inhale slowly through your nose, hold for a few seconds, then exhale slowly.",
+      status: Status.ACTIVE,
     },
     {
       title: "Yoga for Beginners",
@@ -27,6 +28,7 @@ export const Fixtures = {
       difficulty_level: DifficultyLevel.BEGINNER,
       content:
         "Follow a series of beginner-friendly yoga poses, focusing on your breath and alignment.",
+      status: Status.ACTIVE,
     },
     {
       title: "Pomodoro Technique",
@@ -37,6 +39,7 @@ export const Fixtures = {
       difficulty_level: DifficultyLevel.BEGINNER,
       content:
         "Work for 25 minutes, then take a 5-minute break. Repeat the cycle.",
+      status: Status.ACTIVE,
     },
   ],
 };
