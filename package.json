@@ -1,8 +1,8 @@
 {
-  "name": "koa-health-user-activity-manager",
+  "name": "mental_well_being_platform_backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "This project involves developing a Node.js backend for a software platform designed to enhance users' mental well-being through a curated set of activities. These activities focus on promoting relaxation, boosting self-esteem, improving productivity, enhancing physical health, and fostering social connections.",
+  "main": "src/api/server.ts",
   "scripts": {
     "build": "tsc",
     "start": "node dist/api/server.js",
@@ -20,7 +20,7 @@
     "test:migration:repair": "NODE_ENV=test npm run migration:repair"
   },
   "keywords": [],
-  "author": "",
+  "author": "nayrammensah@gmail.com",
   "license": "ISC",
   "dependencies": {
     "@pgkit/client": "^0.1.9",
