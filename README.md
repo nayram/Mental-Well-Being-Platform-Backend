@@ -96,7 +96,7 @@ Swagger will be available on http://localhost:3000/docs by default
 
 - Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)
 
-### Tasks
+### Tasks Completed
 
 - Register `/api/v1/auth/signup [POST]`
 - Login `/api/v1/auth/login [POST]`
