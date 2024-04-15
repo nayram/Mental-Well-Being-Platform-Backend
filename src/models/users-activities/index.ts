@@ -44,6 +44,7 @@ const handleUserActivityModelErrors = (err: any) => {
           .constraint as keyof typeof UserActivityModelConstraintErrors
       ];
   } else {
+    error.name = ERROR_TYPES.ERR_MODEL_VALIDATION;
     log.error(err);
   }
   throw error;
@@ -110,12 +111,24 @@ export const updateUserActivityStatusById = async ({
 }) => {
   const validData = await validateIdAndStatus(id, status);
   const query = sql<ActivitySchema>`UPDATE "userActivty" SET status = ${validData.status} WHERE id = ${validData.id};`;
-  await dbClient.any(query);
+  await dbClient.query(query);
   const { rows } = await dbClient.query(
     sql<UserActivitySchema>`SELECT * FROM ${sql.identifier([UserActivityTableName])} WHERE id = ${validData.id};`,
   );
   return rows[0];
 };
+
+export const getUserActivityById = async (id: string): Promise<UserActivitySchema> => {
+  const { validateSchema, joi } = dataValidation;
+  const schema = joi.object({
+    id: joi.string().regex(uuidPattern).required(),
+  });
+  const data = await validateSchema(schema, { id });
+  const { rows } = await dbClient.query(
+    sql<UserActivitySchema>`SELECT * FROM ${sql.identifier([UserActivityTableName])} WHERE id = ${data.id};`,
+  );
+  return rows[0];
+}
 
 export const getUserActivityByUserId = async (
   user_id: string,

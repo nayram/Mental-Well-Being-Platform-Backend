@@ -16,6 +16,13 @@ export const invalidUserEmailOrPasswordError = () => {
   throw error;
 };
 
+export const throwUserActivityDoesNotExistError = () => {
+  const error = new Error();
+  error.name = ERROR_TYPES.ERR_MODEL_VALIDATION;
+  error.message = "User activity does not exist";
+  throw error;
+}
+
 export const setErrorStatus =
   (errorMap: Record<string, number>) =>
   (error: any, _: Request, res: Response, next: NextFunction) => {
