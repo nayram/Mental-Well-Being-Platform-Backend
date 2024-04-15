@@ -96,6 +96,11 @@ Swagger will be available on http://localhost:3000/docs by default
 
 - Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)
 
+### Design Decisions
+- Database: [Postgres](https://www.postgresql.org/). I went with Postgres because I wanted to have strong data integrity and manage the relationships between the tables or models. Also in case the project grows in the future, postgres will be able to scale out as well and handle complex transaction requirements.
+- Access Tokens: I made the decision not to save the access tokens in the db even though there might be some benefits in doing that, example revoking and invalidating the access tokens during a data breach. My goal was to make this app stateless and reduce the database read/write operations. this will improve performance of the application at scale.
+
+
 ### Tasks Completed
 
 - Register `/api/v1/auth/signup [POST]`
@@ -106,3 +111,9 @@ Swagger will be available on http://localhost:3000/docs by default
   - :id is the id of user activity
   - body should be `{status: "completed"}` You have other options like `PENDING, STARTED, CANCELLED`
 - List completed activities [GET] `/api/v1/user-activities?status=completed&user_id=****`: This requires a user token to be passed in the header `Authorization: Bearer <token>`
+
+### Improvements
+- Improve on the test coverage. There are some utility functions that writing tests for them will be useful.
+- Add test for [PATCH] `/api/v1/user-activities/:id` in the case when the id does not exist.
+- Add deployment protocol needed for production.
+- Complete the Bonus Feature, which is to implement CRUD endpoints to facilitate integration with third party services.
