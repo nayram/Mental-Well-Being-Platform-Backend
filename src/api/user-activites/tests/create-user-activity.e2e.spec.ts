@@ -9,6 +9,7 @@ import {
   Fixtures,
 } from "../../../helpers/utils";
 import { UserModel, UserActivityModel, ActivityModel } from "../../../models";
+import { UserService } from "../../../services";
 
 describe("API: POST /api/v1/user-activities", () => {
   let app: Application;
@@ -37,7 +38,11 @@ describe("API: POST /api/v1/user-activities", () => {
         email: "nayram@me.com",
         password: "nayram123",
       };
-      await UserModel.createUser(user);
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
 
       const createdUser = await UserModel.getUserByEmail(user.email);
 
@@ -53,6 +58,7 @@ describe("API: POST /api/v1/user-activities", () => {
 
       const { status, body } = await supertest(app)
         .post("/api/v1/user-activities")
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send(userActivity);
 
       const [createdUserActivity] =
@@ -69,9 +75,30 @@ describe("API: POST /api/v1/user-activities", () => {
   });
 
   describe("Failure", () => {
+    test("should fail if user token is invalid", async () => {
+      const userActivity: Record<string, string> = {
+        user_id: "421d037d-f462-4e0c-beda-f4b63020d3d0",
+        activity_id: "d6587863-16f9-4d8f-a8f7-ac38ce558eea",
+        status: UserActivityModel.ActivityStatus.COMPLETED,
+      };
+      const { status } =await supertest(app)
+        .post("/api/v1/user-activities")
+        .send(userActivity)
+      expect(status).toBe(httpStatus.UNAUTHORIZED);
+    });
     test.each([["user_id"], ["activity_id"]])(
       "should fail to create user activity when %s is missing",
       async (key) => {
+        const user = {
+          username: "nayram",
+          email: "nayram@me.com",
+          password: "nayram123",
+        };
+        await UserService.createUser(user);
+        const loggedInUser = await UserService.loginUser({
+          email: user.email,
+          password: user.password,
+        });
         const userActivity: Record<string, string> = {
           user_id: "421d037d-f462-4e0c-beda-f4b63020d3d0",
           activity_id: "d6587863-16f9-4d8f-a8f7-ac38ce558eea",
@@ -80,6 +107,7 @@ describe("API: POST /api/v1/user-activities", () => {
         userActivity[key] = "";
         const { status, body } = await supertest(app)
           .post("/api/v1/user-activities")
+          .set("Authorization", `Bearer ${loggedInUser?.token}`)
           .send(userActivity);
         expect(status).toBe(httpStatus.BAD_REQUEST);
         expect(body.message).toBe("Validation failed");
@@ -94,6 +122,16 @@ describe("API: POST /api/v1/user-activities", () => {
     );
 
     test("should fail to create if status is invalid", async () => {
+      const user = {
+        username: "nayram",
+        email: "nayram@me.com",
+        password: "nayram123",
+      };
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
       const userActivity = {
         user_id: "421d037d-f462-4e0c-beda-f4b63020d3d0",
         activity_id: "d6587863-16f9-4d8f-a8f7-ac38ce558eea",
@@ -101,6 +139,7 @@ describe("API: POST /api/v1/user-activities", () => {
       };
       const { status, body } = await supertest(app)
         .post("/api/v1/user-activities")
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send(userActivity);
       expect(status).toBe(httpStatus.BAD_REQUEST);
       expect(body.message).toBe("Validation failed");
@@ -115,6 +154,16 @@ describe("API: POST /api/v1/user-activities", () => {
     });
 
     test("should fail when user_id does not exist", async () => {
+      const user = {
+        username: "nayram",
+        email: "nayram@me.com",
+        password: "nayram123",
+      };
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
       const userActivity = {
         user_id: "421d037d-f462-4e0c-beda-f4b63020d3d0",
         activity_id: "d6587863-16f9-4d8f-a8f7-ac38ce558eea",
@@ -122,6 +171,7 @@ describe("API: POST /api/v1/user-activities", () => {
       };
       const { status, body } = await supertest(app)
         .post("/api/v1/user-activities")
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send(userActivity);
       expect(status).toBe(httpStatus.UN_PROCESSABLE_ENTITY);
       expect(body.message).toBe("user not found");
@@ -133,7 +183,11 @@ describe("API: POST /api/v1/user-activities", () => {
         email: "nayram@me.com",
         password: "nayram123",
       };
-      await UserModel.createUser(user);
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
 
       const createdUser = await UserModel.getUserByEmail(user.email);
       const userActivity = {
@@ -143,6 +197,7 @@ describe("API: POST /api/v1/user-activities", () => {
       };
       const { status, body } = await supertest(app)
         .post("/api/v1/user-activities")
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send(userActivity);
       expect(status).toBe(httpStatus.UN_PROCESSABLE_ENTITY);
       expect(body.message).toBe("activity not found");

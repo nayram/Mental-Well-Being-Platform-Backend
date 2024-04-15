@@ -9,6 +9,7 @@ import {
   Fixtures,
 } from "../../../helpers/utils";
 import { UserModel, UserActivityModel, ActivityModel } from "../../../models";
+import { UserService } from "../../../services";
 import { uuidPattern } from "../validators";
 
 describe("API: GET /api/v1/user-activities", () => {
@@ -38,7 +39,14 @@ describe("API: GET /api/v1/user-activities", () => {
         email: "nayram@me.com",
         password: "nayram123",
       };
-      await UserModel.createUser(user);
+
+      await UserService.createUser(user);
+
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
+
       const createdUser = await UserModel.getUserByEmail(user.email);
       await ActivityModel.createActivities(Fixtures.activities);
       const allActivities = await ActivityModel.getAllActivities();
@@ -57,6 +65,7 @@ describe("API: GET /api/v1/user-activities", () => {
         );
       const { status, body } = await supertest(app)
         .get("/api/v1/user-activities?user_id=" + createdUser?.id)
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send();
       expect(status).toBe(httpStatus.OK);
       expect(body.length).toBe(getAllUserActivities.length);
@@ -76,7 +85,11 @@ describe("API: GET /api/v1/user-activities", () => {
         email: "nayram@me.com",
         password: "nayram123",
       };
-      await UserModel.createUser(user);
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
       const createdUser = await UserModel.getUserByEmail(user.email);
       await ActivityModel.createActivities(Fixtures.activities);
       const [pendingActivity, ...completedActivities] =
@@ -106,6 +119,7 @@ describe("API: GET /api/v1/user-activities", () => {
         .get(
           `/api/v1/user-activities?user_id=${createdUser?.id}&status=${UserActivityModel.ActivityStatus.COMPLETED}`,
         )
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send();
 
       expect(status).toBe(httpStatus.OK);
@@ -115,9 +129,27 @@ describe("API: GET /api/v1/user-activities", () => {
   });
 
   describe("Failure", () => {
+    test("should fail to fetch user activities token is not provided", async () => {
+      const { status } = await supertest(app)
+        .get("/api/v1/user-activities")
+        .send()
+      expect(status).toBe(httpStatus.UNAUTHORIZED);
+    });
+
     test("should fail to fetch user activities when user_id is missing", async () => {
+      const user = {
+        username: "nayram",
+        email: "nayram@me.com",
+        password: "nayram123",
+      };
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
       const { status, body } = await supertest(app)
         .get("/api/v1/user-activities")
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send();
       expect(status).toBe(httpStatus.BAD_REQUEST);
       expect(body.message).toBe("Validation failed");
@@ -131,8 +163,19 @@ describe("API: GET /api/v1/user-activities", () => {
     });
 
     test("should fail to fetch user activities if user_id is invalid", async () => {
+      const user = {
+        username: "nayram",
+        email: "nayram@me.com",
+        password: "nayram123",
+      };
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
       const { status, body } = await supertest(app)
         .get("/api/v1/user-activities?user_id=invalid")
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send();
       expect(status).toBe(httpStatus.BAD_REQUEST);
       expect(body.message).toBe("Validation failed");
@@ -148,10 +191,21 @@ describe("API: GET /api/v1/user-activities", () => {
     });
 
     test("should fail to fetch user activities if status is invalid", async () => {
+      const user = {
+        username: "nayram",
+        email: "nayram@me.com",
+        password: "nayram123",
+      };
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
       const { status, body } = await supertest(app)
         .get(
           "/api/v1/user-activities?user_id=421d037d-f462-4e0c-beda-f4b63020d3d0&status=invalid",
         )
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send();
       expect(status).toBe(httpStatus.BAD_REQUEST);
       expect(body.message).toBe("Validation failed");

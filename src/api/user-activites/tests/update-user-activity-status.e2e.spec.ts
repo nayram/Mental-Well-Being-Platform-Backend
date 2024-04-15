@@ -9,6 +9,7 @@ import {
   Fixtures,
 } from "../../../helpers/utils";
 import { UserModel, UserActivityModel, ActivityModel } from "../../../models";
+import { UserService } from "../../../services";
 import { uuidPattern } from "../validators";
 
 describe("API: PUT /api/v1/user-activities", () => {
@@ -38,7 +39,11 @@ describe("API: PUT /api/v1/user-activities", () => {
         email: "nayram@me.com",
         password: "nayram123",
       };
-      await UserModel.createUser(user);
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
       const createdUser = await UserModel.getUserByEmail(user.email);
       await ActivityModel.createActivities(Fixtures.activities);
       const [pendingActivity] = await ActivityModel.getAllActivities();
@@ -59,6 +64,7 @@ describe("API: PUT /api/v1/user-activities", () => {
 
       const { body, status } = await supertest(app)
         .patch(`/api/v1/user-activities/${createdUserActivity.id}`)
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send({
           status: UserActivityModel.ActivityStatus.COMPLETED,
         });
@@ -80,10 +86,32 @@ describe("API: PUT /api/v1/user-activities", () => {
   });
 
   describe("Failure", () => {
+    test("should fail if user is not logged in", async () => {
+      const id = "d6587863-16f9-4d8f-a8f7-ac38ce558eea";
+      const { status, body } = await supertest(app)
+        .patch("/api/v1/user-activities/" + id)
+        .send({
+          status: UserActivityModel.ActivityStatus.COMPLETED,
+        });
+      expect(status).toBe(httpStatus.UNAUTHORIZED);
+      expect(body.message).toBe("Unauthorized");
+    });
+
     test("should fail if id is invalid", async () => {
+      const user = {
+        username: "nayram",
+        email: "nayram@me.com",
+        password: "nayram123",
+      };
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
       const id = "invalid";
       const { status, body } = await supertest(app)
         .patch("/api/v1/user-activities/" + id)
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send({
           status: UserActivityModel.ActivityStatus.COMPLETED,
         });
@@ -99,9 +127,20 @@ describe("API: PUT /api/v1/user-activities", () => {
     });
 
     test("should fail if status is invalid", async () => {
+      const user = {
+        username: "nayram",
+        email: "nayram@me.com",
+        password: "nayram123",
+      };
+      await UserService.createUser(user);
+      const loggedInUser = await UserService.loginUser({
+        email: user.email,
+        password: user.password,
+      });
       const id = "d6587863-16f9-4d8f-a8f7-ac38ce558eea";
       const { status, body } = await supertest(app)
         .patch("/api/v1/user-activities/" + id)
+        .set("Authorization", `Bearer ${loggedInUser?.token}`)
         .send({
           status: "invalid",
         });

@@ -9,6 +9,7 @@ import {
   validateUpdateUserActivityStatusRequest,
   validateFetchUserActivityRequest,
 } from "./validators";
+import { authMiddleware } from "../middlewares/auth.middleware";
 import { ERROR_TYPES, setErrorStatus, httpStatus } from "../../helpers";
 
 const router = Router();
@@ -19,10 +20,16 @@ const ERR_MAP = {
 };
 
 const v1UserActivityRouter = router
-  .get("/", validateFetchUserActivityRequest, fetchUserActivity)
-  .post("/", validateCreateUserActivityRequest, createUserActivity)
+  .get("/", authMiddleware, validateFetchUserActivityRequest, fetchUserActivity)
+  .post(
+    "/",
+    authMiddleware,
+    validateCreateUserActivityRequest,
+    createUserActivity,
+  )
   .patch(
     "/:id",
+    authMiddleware,
     validateUpdateUserActivityStatusRequest,
     updateUserActivityStatus,
   )

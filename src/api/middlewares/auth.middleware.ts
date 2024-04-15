@@ -10,23 +10,18 @@ import { ERROR_TYPES, httpStatus } from "../../helpers";
 
 const jwtSecret = config.get<string>("jwt_secret");
 
-export type ExtendedRequest = Request & {
-  user: {
-    id: string;
-  };
-};
 export const authMiddleware = async (
-  req: ExtendedRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
-) => {
+): Promise<void> => {
   try {
     if (!req.headers.authorization) {
       res.status(httpStatus.UNAUTHORIZED).send({ message: "Unauthorized" });
     } else {
       const token = req.headers.authorization?.split(" ")[1];
       if (!token) {
-        return res
+        res
           .status(httpStatus.UNAUTHORIZED)
           .json({ error: { message: "Unauthorized" } });
       }
@@ -37,14 +32,11 @@ export const authMiddleware = async (
           .status(httpStatus.UNAUTHORIZED)
           .send({ name: "UnauthorizedError", message: "Unauthorized" });
       }
-      req.user = {
-        id: verifiedToken.id,
-      };
       next();
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unauthorized";
-    res.status(401).send({ name: "UnauthorizedError", message });
+    res.status(httpStatus.UNAUTHORIZED).send({ name: "UnauthorizedError", message });
   }
 };
 

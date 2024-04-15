@@ -1,9 +1,9 @@
-import { Application, Response } from "express";
+import { Application, Response, Request } from "express";
 import http, { Server } from "http";
 import { generateSignedToken, httpStatus } from "../../../helpers";
 import { createApp } from "../../app";
 
-import { authMiddleware, ExtendedRequest } from "../auth.middleware";
+import { authMiddleware } from "../auth.middleware";
 
 const mockedNext = jest.fn();
 
@@ -28,15 +28,15 @@ describe("AuthMiddleware", () => {
 
     const req = {
       headers: { authorization: `Bearer ${token}` },
-    } as ExtendedRequest;
+    } as Request;
 
     await authMiddleware(req, {} as Response, mockedNext);
 
-    expect(req.user).toBeDefined();
+    expect(mockedNext).toHaveBeenCalled();
   });
 
   it("should throw Unauthorized error when auth token is not provided", async () => {
-    const req = { headers: {} } as ExtendedRequest;
+    const req = { headers: {} } as Request;
     const res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
@@ -49,7 +49,7 @@ describe("AuthMiddleware", () => {
   it("should throw Unauthorized error when token is not valid", async () => {
     const req = {
       headers: { authorization: "Bearer not_valid" },
-    } as ExtendedRequest;
+    } as Request;
     const res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
@@ -68,7 +68,7 @@ describe("AuthMiddleware", () => {
     const token = generateSignedToken(userId, expirydate);
     const req = {
       headers: { authorization: `Bearer ${token}` },
-    } as ExtendedRequest;
+    } as Request;
     const res = {
       status: jest.fn().mockReturnThis(),
       send: jest.fn(),
