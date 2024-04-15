@@ -121,7 +121,7 @@ const ERR_MAP = {
  *       properties:
  *         status:
  *           type: string
- *           example: "PENDING"
+ *           example: "COMPLETED"
  *           enum:
  *             - PENDING
  *             - COMPLETED
