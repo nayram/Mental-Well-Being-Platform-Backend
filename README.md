@@ -46,7 +46,7 @@ Make sure to run the migrations before running the app (see Migrations section b
 ### Production:
 
 - To build the project, run `npm run build`
-- To start the project in prod mode, run `npm run start:prod`
+- To start the project in prod mode, run `npm run start`
 
 ### Testing:
 
@@ -69,8 +69,6 @@ Migration scripts:
 - `npm run migration:create ${name-of-migration}` - creates new migration file
 - `npm run migration:up` - runs migration
 - `npm run migration:down` - reverts all migrations
-- you can also use `npm run test:migration:run`, `npm run test:migration:show` and `npm run test:migration:revert` to
-  manage testing database
 
 - To seed the database with default activities, run `npm run seed:activity`
 
@@ -78,7 +76,6 @@ Migration scripts:
 
 Swagger will be available on http://localhost:3000/docs by default
 
-You can find swagger documentation [here](https://swagger.io/docs/specification/about/)
 
 
 ### Dependencies
@@ -95,3 +92,17 @@ You can find swagger documentation [here](https://swagger.io/docs/specification/
 - Activity: `ActivityModel` - This model describes the structure of an activity. For more information see: [Activity Model](./src/models/activities) The ActivitySchema is defined below
 - User: `UserModel` - This model describes the structure of a user. For more information see: [User Model](./src/models/users) The UserSchema is defined below  
 - UserActivity: `UserActivityModel` - This model describes the structure of a user activity. For more information see: [UserActivity Model](./src/models/users-activities). The UserActivity keeps track of completed activities. 
+
+### API Documentation
+
+- Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)
+
+### Tasks
+- Register `/api/v1/auth/signup [POST]`
+- Login  `/api/v1/auth/login [POST]`
+- List all activities [GET] `/api/v1/activities`
+- Mark activities as completed [PATCH] `/api/v1/user-activities/:id` 
+  - This requires a user token to be passed in the header `Authorization: Bearer <token>`
+  - :id is the id of user activity
+  - body should be `{status: "completed"}` You have other options like `PENDING, STARTED, CANCELLED`
+- List completed activities [GET] `/api/v1/user-activities?status=completed&user_id=****`: This requires a user token to be passed in the header `Authorization: Bearer <token>`
