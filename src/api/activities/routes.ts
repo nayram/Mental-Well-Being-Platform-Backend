@@ -73,7 +73,7 @@ const router = Router();
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/GetAllActivitiesResponse'
- * 
+ *
  */
 const v1ActivityRouter = router.get("/", getAllActivities);
 

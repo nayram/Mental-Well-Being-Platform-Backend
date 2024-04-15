@@ -81,9 +81,9 @@ describe("API: POST /api/v1/user-activities", () => {
         activity_id: "d6587863-16f9-4d8f-a8f7-ac38ce558eea",
         status: UserActivityModel.ActivityStatus.COMPLETED,
       };
-      const { status } =await supertest(app)
+      const { status } = await supertest(app)
         .post("/api/v1/user-activities")
-        .send(userActivity)
+        .send(userActivity);
       expect(status).toBe(httpStatus.UNAUTHORIZED);
     });
     test.each([["user_id"], ["activity_id"]])(

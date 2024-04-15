@@ -1,5 +1,8 @@
 import { UserActivityModel, ActivityModel } from "../../models";
-import { dataValidation, throwUserActivityDoesNotExistError } from "../../helpers";
+import {
+  dataValidation,
+  throwUserActivityDoesNotExistError,
+} from "../../helpers";
 export const UserActivityTableName = "userActivty";
 
 const uuidPattern =
@@ -66,8 +69,8 @@ export const updateUserActivityStatusById = async ({
 }) => {
   const validData = await validateIdAndStatus(id, status);
   const activity = await UserActivityModel.getUserActivityById(validData.id);
-  if (!activity){
-    throwUserActivityDoesNotExistError()
+  if (!activity) {
+    throwUserActivityDoesNotExistError();
   }
   return await UserActivityModel.updateUserActivityStatusById(validData);
 };

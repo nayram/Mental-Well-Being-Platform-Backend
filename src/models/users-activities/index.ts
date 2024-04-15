@@ -118,7 +118,9 @@ export const updateUserActivityStatusById = async ({
   return rows[0];
 };
 
-export const getUserActivityById = async (id: string): Promise<UserActivitySchema> => {
+export const getUserActivityById = async (
+  id: string,
+): Promise<UserActivitySchema> => {
   const { validateSchema, joi } = dataValidation;
   const schema = joi.object({
     id: joi.string().regex(uuidPattern).required(),
@@ -128,7 +130,7 @@ export const getUserActivityById = async (id: string): Promise<UserActivitySchem
     sql<UserActivitySchema>`SELECT * FROM ${sql.identifier([UserActivityTableName])} WHERE id = ${data.id};`,
   );
   return rows[0];
-}
+};
 
 export const getUserActivityByUserId = async (
   user_id: string,

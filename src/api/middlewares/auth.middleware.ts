@@ -36,7 +36,9 @@ export const authMiddleware = async (
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unauthorized";
-    res.status(httpStatus.UNAUTHORIZED).send({ name: "UnauthorizedError", message });
+    res
+      .status(httpStatus.UNAUTHORIZED)
+      .send({ name: "UnauthorizedError", message });
   }
 };
 

@@ -21,7 +21,7 @@ export const throwUserActivityDoesNotExistError = () => {
   error.name = ERROR_TYPES.ERR_MODEL_VALIDATION;
   error.message = "User activity does not exist";
   throw error;
-}
+};
 
 export const setErrorStatus =
   (errorMap: Record<string, number>) =>

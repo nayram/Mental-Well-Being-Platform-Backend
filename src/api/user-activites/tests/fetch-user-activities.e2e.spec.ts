@@ -132,7 +132,7 @@ describe("API: GET /api/v1/user-activities", () => {
     test("should fail to fetch user activities token is not provided", async () => {
       const { status } = await supertest(app)
         .get("/api/v1/user-activities")
-        .send()
+        .send();
       expect(status).toBe(httpStatus.UNAUTHORIZED);
     });
 

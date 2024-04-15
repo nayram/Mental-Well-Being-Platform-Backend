@@ -69,7 +69,7 @@ const ERR_MAP = {
  *               properties:
  *                 source:
  *                   type: string
- *                   example: 
+ *                   example:
  *                     body
  *                 keys:
  *                   type: array
@@ -197,7 +197,7 @@ const ERR_MAP = {
  *         updated_at:
  *           type: string
  *           format: date-time
- * 
+ *
  * /api/v1/user-activities:
  *   get:
  *     tags:
@@ -328,7 +328,7 @@ const ERR_MAP = {
  *            application/json:
  *              schema:
  *                $ref: '#/components/schemas/UnauthorizedError'
- * 
+ *
  */
 
 const v1UserActivityRouter = router

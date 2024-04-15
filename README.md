@@ -5,13 +5,13 @@
 This project involves developing a Node.js backend for a software platform designed to enhance users' mental well-being through a curated set of activities. These activities focus on promoting relaxation, boosting self-esteem, improving productivity, enhancing physical health, and fostering social connections.
 
 ### Features
+
 Users should be able to:
 
 - Register and log in.
 - List all available activities.
 - Mark activities as completed.
 - List their completed activities.
-
 
 ## Installation
 
@@ -64,6 +64,7 @@ Application runs on [localhost:3000](http://localhost:3000) by default.
 ## Migrations
 
 Migration scripts:
+
 - The migration scripts are located in `src/scripts/migrations`
 - `npm run migration:repair` - repairs all migrations
 - `npm run migration:create ${name-of-migration}` - creates new migration file
@@ -75,8 +76,6 @@ Migration scripts:
 ## Swagger
 
 Swagger will be available on http://localhost:3000/docs by default
-
-
 
 ### Dependencies
 
@@ -90,18 +89,19 @@ Swagger will be available on http://localhost:3000/docs by default
 ### Data Models
 
 - Activity: `ActivityModel` - This model describes the structure of an activity. For more information see: [Activity Model](./src/models/activities) The ActivitySchema is defined below
-- User: `UserModel` - This model describes the structure of a user. For more information see: [User Model](./src/models/users) The UserSchema is defined below  
-- UserActivity: `UserActivityModel` - This model describes the structure of a user activity. For more information see: [UserActivity Model](./src/models/users-activities). The UserActivity keeps track of completed activities. 
+- User: `UserModel` - This model describes the structure of a user. For more information see: [User Model](./src/models/users) The UserSchema is defined below
+- UserActivity: `UserActivityModel` - This model describes the structure of a user activity. For more information see: [UserActivity Model](./src/models/users-activities). The UserActivity keeps track of completed activities.
 
 ### API Documentation
 
 - Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)
 
 ### Tasks
+
 - Register `/api/v1/auth/signup [POST]`
-- Login  `/api/v1/auth/login [POST]`
+- Login `/api/v1/auth/login [POST]`
 - List all activities [GET] `/api/v1/activities`
-- Mark activities as completed [PATCH] `/api/v1/user-activities/:id` 
+- Mark activities as completed [PATCH] `/api/v1/user-activities/:id`
   - This requires a user token to be passed in the header `Authorization: Bearer <token>`
   - :id is the id of user activity
   - body should be `{status: "completed"}` You have other options like `PENDING, STARTED, CANCELLED`
