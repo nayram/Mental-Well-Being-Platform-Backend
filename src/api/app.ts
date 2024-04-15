@@ -3,9 +3,9 @@ import pino from "pino-http";
 import helmet from "helmet";
 import cors from "cors";
 import { errors } from "celebrate";
+import swaggerDocs from "../swagger-config";
 import { logger } from "../lib/logger";
 import { appRoutes } from "./routes";
-import { notFound, sendError } from "../helpers";
 
 const app = express();
 
@@ -20,12 +20,11 @@ export const createApp = (): Application => {
     .use(requestLogger)
     .use(cors())
     .use(helmet())
-    .use(express.urlencoded({ extended: true }))
     .use(express.json())
+    .use(express.urlencoded({ extended: true }))
     .use("/api", appRoutes)
-    .use(notFound)
-    .use(sendError)
     .use(errors());
 
+  swaggerDocs(app);
   return app;
 };
