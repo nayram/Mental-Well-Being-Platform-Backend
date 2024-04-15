@@ -1,8 +1,13 @@
 import { sql } from "@pgkit/client";
 import joi from "joi";
+import config from "config";
+import { sign } from "jsonwebtoken";
 import { dbClient } from "../lib/postgres-utils/resource";
 import { ActivityModel } from "../models";
 import { ERROR_TYPES } from "./errors";
+
+const jwtSecret = config.get<string>("jwt_secret");
+const jwtExpiry = config.get<string>("jwt_expires_at");
 
 const { Category, DifficultyLevel, Status } = ActivityModel;
 
@@ -83,4 +88,11 @@ export const httpStatus = {
   BAD_REQUEST: 400,
   AUTHENTICATION_FAILED: 403,
   AUTHORIZATION_FAILED: 401,
+};
+
+export const generateSignedToken = (id: string, expiresIn = jwtExpiry) => {
+  const token = sign({ id }, jwtSecret, {
+    expiresIn,
+  });
+  return token;
 };

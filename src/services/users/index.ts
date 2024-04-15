@@ -1,13 +1,14 @@
 import * as bcrypt from "bcrypt";
 import config from "config";
 import { omit } from "ramda";
-import { sign } from "jsonwebtoken";
 import { UserModel } from "../../models";
-import { dataValidation, invalidUserEmailOrPasswordError } from "../../helpers";
+import {
+  dataValidation,
+  invalidUserEmailOrPasswordError,
+  generateSignedToken,
+} from "../../helpers";
 
 const saltRounds = config.get<number>("salt_rounds");
-const jwtSecret = config.get<string>("jwt_secret");
-const jwtExpiry = config.get<string>("jwt_expires_at");
 
 const omitPassord = (user: UserModel.UserSchema) => omit(["password"], user);
 
@@ -72,9 +73,8 @@ export const loginUser = async ({
   if (!validPassword) {
     return invalidUserEmailOrPasswordError();
   }
-  const token = sign({ id: user?.id }, jwtSecret, {
-    expiresIn: jwtExpiry,
-  });
+
+  const token = generateSignedToken(user?.id as string);
 
   return {
     user: { ...omitPassord(user || ({} as UserModel.UserSchema)) },

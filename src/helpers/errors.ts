@@ -6,6 +6,7 @@ export const ERROR_TYPES = {
   ERR_MODEL_VALIDATION: "ModelValidationError",
   ERR_VALIDATION: "ValidationError",
   ERR_INVALID_USER_EMAIL_OR_PASSWORD: "InvalidUserEmailOrPassword",
+  ERR_UNAUTHORIZED: "Unauthorized",
 };
 
 export const invalidUserEmailOrPasswordError = () => {
