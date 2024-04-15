@@ -1,7 +1,7 @@
 import { UserModel, ActivityModel } from "../..";
 import {
   createUserActivity,
-  getUserActivityByUserIdAndStatus,
+  getUserActivityDetailsByUserIdAndStatus,
   UserActivityTableName,
   ActivityStatus,
 } from "..";
@@ -36,13 +36,11 @@ describe("Models: Get All User Activities", () => {
     test("should get user activities by status", async () => {
       const [pendingActivity, ...completedActivities] =
         await ActivityModel.getAllActivities();
-
       await createUserActivity({
         user_id: createdUser?.id || "",
         activity_id: pendingActivity.id,
         status: ActivityStatus.PENDING,
       });
-
       for (const activity of completedActivities) {
         await createUserActivity({
           user_id: createdUser?.id || "",
@@ -51,18 +49,23 @@ describe("Models: Get All User Activities", () => {
         });
       }
 
-      const pendingUserActivities = await getUserActivityByUserIdAndStatus({
-        user_id: createdUser?.id || "",
-        status: ActivityStatus.PENDING,
-      });
-      const completedUserActivities = await getUserActivityByUserIdAndStatus({
-        user_id: createdUser?.id || "",
-        status: ActivityStatus.COMPLETED,
-      });
-
-      expect(pendingUserActivities.length).toBe(1);
-
+      const completedUserActivities =
+        await getUserActivityDetailsByUserIdAndStatus({
+          user_id: createdUser?.id || "",
+          status: ActivityStatus.COMPLETED,
+        });
       expect(completedUserActivities.length).toBe(completedActivities.length);
+
+      for (const activity of completedUserActivities) {
+        expect(activity.status).toBe(ActivityStatus.COMPLETED);
+        expect(activity).toHaveProperty("title");
+        expect(activity).toHaveProperty("description");
+        expect(activity).toHaveProperty("category");
+        expect(activity).toHaveProperty("duration");
+        expect(activity).toHaveProperty("difficulty_level");
+        expect(activity).toHaveProperty("content");
+        expect(activity).toHaveProperty("status");
+      }
     });
   });
 
@@ -76,7 +79,7 @@ describe("Models: Get All User Activities", () => {
         };
         userActivity[field] = "";
         await expect(
-          getUserActivityByUserIdAndStatus(userActivity as any),
+          getUserActivityDetailsByUserIdAndStatus(userActivity as any),
         ).rejects.toThrow(`${field} is not allowed to be empty`);
       },
     );

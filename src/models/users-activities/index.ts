@@ -1,5 +1,6 @@
 import { logger, dbClient, sql } from "../../lib";
 import { dataValidation, ERROR_TYPES } from "../../helpers";
+import { TableName as ActivityTableName, ActivitySchema } from "../activities";
 
 const log = logger({ serviceName: "models" });
 
@@ -108,8 +109,8 @@ export const updateUserActivityStatusById = async ({
   status: ActivityStatus;
 }) => {
   const validData = await validateIdAndStatus(id, status);
-  const query = sql<UserActivitySchema>`UPDATE ${sql.identifier([UserActivityTableName])} SET status = ${validData.status} WHERE id = ${validData.id};`;
-  await dbClient.anyFirst(query);
+  const query = sql<ActivitySchema>`UPDATE "userActivty" SET status = ${validData.status} WHERE id = ${validData.id};`;
+  await dbClient.any(query);
   const { rows } = await dbClient.query(
     sql<UserActivitySchema>`SELECT * FROM ${sql.identifier([UserActivityTableName])} WHERE id = ${validData.id};`,
   );
@@ -124,8 +125,10 @@ export const getUserActivityByUserId = async (
     user_id: joi.string().regex(uuidPattern).required(),
   });
   const data = await validateSchema(schema, { user_id });
-  const query = sql<UserActivitySchema>`SELECT * FROM ${sql.identifier([UserActivityTableName])} WHERE user_id = ${data.user_id};`;
-  return await dbClient.many(query);
+  const { rows } = await dbClient.query(
+    sql<UserActivitySchema>`SELECT * FROM ${sql.identifier([UserActivityTableName])} WHERE user_id = ${data.user_id};`,
+  );
+  return rows;
 };
 
 export const getUserActivityByUserIdAndStatus = async ({
@@ -136,6 +139,39 @@ export const getUserActivityByUserIdAndStatus = async ({
   status: ActivityStatus;
 }): Promise<UserActivitySchema[]> => {
   const data = await validateUserIdAndStatus(user_id, status);
-  const query = sql<UserActivitySchema>`SELECT * FROM ${sql.identifier([UserActivityTableName])} WHERE user_id = ${user_id} AND status = ${data.status};`;
-  return await dbClient.many(query);
+  const query = sql<UserActivitySchema>`SELECT * FROM ${sql.identifier([UserActivityTableName])} WHERE user_id = ${data.user_id} and status = ${data.status};`;
+  const { rows } = await dbClient.query(query);
+  return rows;
+};
+
+export const getUserActivityDetailsByUserId = async (
+  user_id: string,
+): Promise<UserActivitySchema[]> => {
+  const { validateSchema, joi } = dataValidation;
+  const schema = joi.object({
+    user_id: joi.string().regex(uuidPattern).required(),
+  });
+  const data = await validateSchema(schema, { user_id });
+  const query = sql<UserActivitySchema>`SELECT activity.id as id, activity.title, activity.description, activity.category, activity.duration, activity.difficulty_level, activity.content,  ${sql.identifier([UserActivityTableName])}.status
+   FROM ${sql.identifier([UserActivityTableName])} 
+   INNER JOIN ${sql.identifier([ActivityTableName])} AS activity ON ${sql.identifier([UserActivityTableName])}.activity_id = ${sql.identifier([ActivityTableName])}.id
+   WHERE user_id = ${data.user_id};`;
+  const { rows } = await dbClient.query(query);
+  return rows;
+};
+
+export const getUserActivityDetailsByUserIdAndStatus = async ({
+  user_id,
+  status,
+}: {
+  user_id: string;
+  status: ActivityStatus;
+}): Promise<ActivitySchema[]> => {
+  const data = await validateUserIdAndStatus(user_id, status);
+  const query = sql<ActivitySchema>`SELECT activity.id as id, activity.title, activity.description, activity.category, activity.duration, activity.difficulty_level, activity.content, ${sql.identifier([UserActivityTableName])}.status
+  FROM ${sql.identifier([UserActivityTableName])} 
+  INNER JOIN ${sql.identifier([ActivityTableName])} AS activity ON ${sql.identifier([UserActivityTableName])}.activity_id = ${sql.identifier([ActivityTableName])}.id
+  WHERE user_id = ${user_id} AND ${sql.identifier([UserActivityTableName])}.status = ${data.status};`;
+  const { rows } = await dbClient.query(query);
+  return rows;
 };

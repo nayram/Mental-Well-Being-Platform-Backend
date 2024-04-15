@@ -1,13 +1,13 @@
 import { UserModel, ActivityModel } from "../..";
 import {
   createUserActivity,
-  getUserActivityByUserId,
+  getUserActivityDetailsByUserId,
   UserActivityTableName,
   ActivityStatus,
 } from "..";
 import { closeDb, truncateTable, Fixtures } from "../../../helpers";
 
-describe("Models: Get All User Activities", () => {
+describe("Models: Get Full User Activities By UserId", () => {
   let createdUser: UserModel.UserSchema | null;
   afterAll(async () => {
     await closeDb();
@@ -44,17 +44,24 @@ describe("Models: Get All User Activities", () => {
         };
         await createUserActivity(userActivity);
       }
-      await getUserActivityByUserId(createdUser?.id || "");
-      expect(await getUserActivityByUserId(createdUser?.id || "")).toHaveLength(
-        activities.length,
+      const userActivities = await getUserActivityDetailsByUserId(
+        createdUser?.id || "",
       );
+      expect(userActivities).toHaveLength(activities.length);
+      expect(userActivities[0]).toHaveProperty("title");
+      expect(userActivities[0]).toHaveProperty("description");
+      expect(userActivities[0]).toHaveProperty("category");
+      expect(userActivities[0]).toHaveProperty("duration");
+      expect(userActivities[0]).toHaveProperty("difficulty_level");
+      expect(userActivities[0]).toHaveProperty("content");
+      expect(userActivities[0]).toHaveProperty("status");
     });
   });
 
   describe("Failure", () => {
     test("should throw error if user_id is missing", async () => {
       const userId = "";
-      await expect(getUserActivityByUserId(userId)).rejects.toThrow(
+      await expect(getUserActivityDetailsByUserId(userId)).rejects.toThrow(
         `user_id is not allowed to be empty`,
       );
     });
