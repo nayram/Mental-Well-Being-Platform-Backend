@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/api/server.js",
     "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec  \"node -r ts-node/register/transpile-only src/api/server.ts\"",
-    "lint:fix": "eslint --fix ./src",
-    "format": "prettier --write .",
+    "lint:fix": "prettier --write .",
     "migration:create": "node -r ts-node/register/transpile-only src/scripts/migrate create --name",
     "migration:up": "node -r ts-node/register/transpile-only src/scripts/migrate up",
     "migration:down": "node -r ts-node/register/transpile-only src/scripts/migrate down",
