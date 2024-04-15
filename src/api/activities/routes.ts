@@ -60,7 +60,7 @@ const router = Router();
  *       type: array
  *       items:
  *         $ref: '#/components/schemas/Activity'
- * /activities:
+ * /api/v1/activities:
  *   get:
  *     description: Get all activities
  *     operationId: getAllActivities

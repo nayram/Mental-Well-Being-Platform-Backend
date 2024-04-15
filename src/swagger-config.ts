@@ -26,7 +26,7 @@ const options = {
 };
 const swaggerSpec = swaggerJsdoc(options);
 async function swaggerDocs(app: Express) {
-  console.log(swaggerSpec)
+  
   // Swagger page
   app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
