@@ -146,13 +146,13 @@ export const getUserActivityByUserIdAndStatus = async ({
 
 export const getUserActivityDetailsByUserId = async (
   user_id: string,
-): Promise<UserActivitySchema[]> => {
+): Promise<ActivitySchema[]> => {
   const { validateSchema, joi } = dataValidation;
   const schema = joi.object({
     user_id: joi.string().regex(uuidPattern).required(),
   });
   const data = await validateSchema(schema, { user_id });
-  const query = sql<UserActivitySchema>`SELECT activity.id as id, activity.title, activity.description, activity.category, activity.duration, activity.difficulty_level, activity.content,  ${sql.identifier([UserActivityTableName])}.status
+  const query = sql<ActivitySchema>`SELECT activity.id as id, activity.title, activity.description, activity.category, activity.duration, activity.difficulty_level, activity.content,  ${sql.identifier([UserActivityTableName])}.status
    FROM ${sql.identifier([UserActivityTableName])} 
    INNER JOIN ${sql.identifier([ActivityTableName])} AS activity ON ${sql.identifier([UserActivityTableName])}.activity_id = ${sql.identifier([ActivityTableName])}.id
    WHERE user_id = ${data.user_id};`;
