@@ -3,7 +3,7 @@ import { createUser, loginUser } from "./controller";
 import {
   validateCreateUserRequest,
   validateLoginUserRequest,
-} from "./validator-schema";
+} from "./validators";
 import { httpStatus, ERROR_TYPES, setErrorStatus } from "../../helpers";
 const router = Router();
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllActivities } from "../activities/controller";
+import { getAllActivities } from "./controller";
 
 const router = Router();
 
